@@ -6,17 +6,17 @@ import Link from 'next/link';
 
 /* ─── Animation variants ─── */
 const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] },
+    transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] },
   },
 };
 
 const staggerContainer = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
+  visible: { transition: { staggerChildren: 0.06 } },
 };
 
 
@@ -151,7 +151,7 @@ export default function Home() {
             <motion.div
               initial={{ opacity: 0, x: 40 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }}
+              transition={{ duration: 0.4, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }}
             >
               <div className="bg-white border border-border-hard shadow-hard relative">
                 {/* Side badge */}

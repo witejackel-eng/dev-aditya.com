@@ -1,24 +1,22 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import Lenis from '@studio-freight/lenis';
-import { useScroll, useMotionValueEvent } from 'framer-motion';
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
-  const lenisRef = useRef<Lenis | null>(null);
-  const { scrollY } = useScroll();
-
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
     const lenis = new Lenis({
-      duration: 0.75,
+      duration: isMobile ? 0.25 : 0.55,
       easing: (t) => 1 - Math.pow(1 - t, 3),
-      smoothWheel: true,
-      wheelMultiplier: 1.1,
-      touchMultiplier: 1.4,
+      smoothWheel: !isMobile,
+      wheelMultiplier: 1.8,
+      touchMultiplier: 2.0,
+      infinite: false,
     });
-    lenisRef.current = lenis;
 
     function raf(time: number) {
       lenis.raf(time);
@@ -30,12 +28,6 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       lenis.destroy();
     };
   }, []);
-
-  useMotionValueEvent(scrollY, 'change', (latest) => {
-    if (lenisRef.current) {
-      lenisRef.current.scrollTo(latest, { immediate: true });
-    }
-  });
 
   return <>{children}</>;
 }
