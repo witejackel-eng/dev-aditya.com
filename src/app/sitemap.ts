@@ -4,7 +4,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://dev-aditya.com';
 
   const routes = [
-    '', '/work', '/work/ibs', '/work/corporate-leadgen-platform',
+    '', '/work', '/packages', '/work/ibs', '/work/corporate-leadgen-platform',
     '/work/aadi-card', '/work/pulse-dashboard', '/about', '/mentoring',
     '/contact', '/resources', '/resources/portfolio-checklist',
     '/resources/ai-website-agency', '/resources/frontend-qa',

@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 const pageLinks = [
   { href: '/work', label: 'Work' },
+  { href: '/packages', label: 'Packages' },
   { href: '/about', label: 'About' },
   { href: '/mentoring', label: 'Project Help' },
   { href: '/resources', label: 'Resources' },
