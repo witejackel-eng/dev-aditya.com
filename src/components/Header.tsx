@@ -5,29 +5,23 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navLinks = [
-  { href: '/work', label: 'Work' },
-  { href: '/about', label: 'About' },
-  { href: '/mentoring', label: 'Project Help' },
-  { href: '/resources', label: 'Resources' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/work', label: 'WORK' },
+  { href: '/about', label: 'ABOUT' },
+  { href: '/mentoring', label: 'PROJECT HELP' },
+  { href: '/resources', label: 'RESOURCES' },
+  { href: '/contact', label: 'CONTACT' },
 ];
 
 export default function Header() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  const [prevPath, setPrevPath] = useState(pathname);
 
-  useEffect(() => {
-    // Close mobile menu on route change
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+  if (prevPath !== pathname) {
     setMobileOpen(false);
-  }, [pathname]);
+    setPrevPath(pathname);
+  }
 
   useEffect(() => {
     if (mobileOpen) {
@@ -39,46 +33,44 @@ export default function Header() {
   }, [mobileOpen]);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-bg-primary/90 backdrop-blur-md border-b border-border' : 'bg-transparent'}`}>
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="text-accent font-bold text-xl tracking-tight font-[family-name:var(--font-sans)]">
-          A.
+    <header className="fixed top-0 left-0 right-0 z-50 bg-bg-primary border-b border-border-hard">
+      <div className="max-w-7xl mx-auto px-6 h-[70px] flex items-center justify-between">
+        {/* Left: Logo */}
+        <Link href="/" className="flex items-center gap-3">
+          <span className="bg-maroon text-white w-8 h-8 flex items-center justify-center text-sm font-bold border border-border-hard">
+            A
+          </span>
+          <span className="font-bold text-text-primary tracking-tight text-sm uppercase font-[family-name:var(--font-mono)]">
+            ADITYA
+          </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8" aria-label="Main navigation">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`text-sm tracking-wide transition-colors duration-200 ${
-                pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))
-                  ? 'text-accent'
-                  : 'text-text-muted hover:text-text-primary'
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="hidden md:flex items-center gap-4">
-          <a
-            href="https://github.com/witejackel-eng"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-text-muted hover:text-text-primary transition-colors text-sm"
-            aria-label="GitHub"
-          >
-            GitHub
-          </a>
+        {/* Right: Nav + CTA */}
+        <div className="hidden md:flex items-center gap-8">
+          <nav className="flex items-center gap-7" aria-label="Main navigation">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`font-[family-name:var(--font-mono)] text-xs tracking-widest uppercase transition-colors duration-200 ${
+                  pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href))
+                    ? 'text-maroon'
+                    : 'text-text-muted hover:text-text-primary'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
           <a
             href="mailto:hi.aditya.dev@gmail.com"
-            className="text-sm text-accent hover:text-accent-dark transition-colors"
+            className="bg-maroon text-white border border-border-hard px-4 py-2 text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard-sm hover:bg-maroon-dark transition-colors duration-200"
           >
-            Email me →
+            EMAIL ME →
           </a>
         </div>
 
+        {/* Mobile menu button */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className="md:hidden flex flex-col gap-1.5 p-2"
@@ -100,28 +92,29 @@ export default function Header() {
         </button>
       </div>
 
+      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-bg-primary/98 backdrop-blur-lg md:hidden z-40 flex flex-col items-center justify-center gap-8"
+            className="fixed inset-0 top-[70px] bg-bg-primary border-x border-b border-border-hard md:hidden z-40 flex flex-col items-start px-6 py-8 gap-6"
           >
             {navLinks.map((link, i) => (
               <motion.div
                 key={link.href}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ delay: i * 0.05, duration: 0.2 }}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ delay: i * 0.04, duration: 0.15 }}
               >
                 <Link
                   href={link.href}
-                  className={`text-3xl font-medium tracking-tight transition-colors ${
+                  className={`font-[family-name:var(--font-mono)] text-sm uppercase tracking-widest transition-colors ${
                     pathname === link.href || pathname.startsWith(link.href)
-                      ? 'text-accent'
+                      ? 'text-maroon'
                       : 'text-text-muted hover:text-text-primary'
                   }`}
                 >
@@ -130,25 +123,17 @@ export default function Header() {
               </motion.div>
             ))}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ delay: navLinks.length * 0.05, duration: 0.2 }}
-              className="flex flex-col items-center gap-4 mt-4"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ delay: navLinks.length * 0.04, duration: 0.15 }}
+              className="mt-4"
             >
               <a
-                href="https://github.com/witejackel-eng"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-text-muted hover:text-text-primary transition-colors text-lg"
-              >
-                GitHub ↗
-              </a>
-              <a
                 href="mailto:hi.aditya.dev@gmail.com"
-                className="text-accent text-lg"
+                className="inline-block bg-maroon text-white border border-border-hard px-5 py-3 text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard-sm"
               >
-                Email me →
+                EMAIL ME →
               </a>
             </motion.div>
           </motion.div>

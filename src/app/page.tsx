@@ -4,39 +4,31 @@ import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 
-/* ─── Reusable animation variants ─── */
+/* ─── Animation variants ─── */
 const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] },
+    transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] },
   },
 };
 
 const staggerContainer = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.08 } },
 };
 
-/* ─── Small helper: reduced-motion check ─── */
+
 function useReducedMotion() {
   if (typeof window === 'undefined') return false;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-/* ─── Section wrapper with scroll-triggered reveal ─── */
-function AnimatedSection({
-  children,
-  className = '',
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+function AnimatedSection({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const isInView = useInView(ref, { once: true, margin: '-80px' });
   const reduced = useReducedMotion();
-
   return (
     <motion.section
       ref={ref}
@@ -51,270 +43,166 @@ function AnimatedSection({
 }
 
 /* ─── Data ─── */
-const marqueeItems =
-  'React \u25C6 Next.js \u25C6 TypeScript \u25C6 Tailwind CSS \u25C6 Framer Motion \u25C6 GSAP \u25C6 Three.js \u25C6 WebGL \u25C6 Node.js \u25C6 Express \u25C6 MongoDB \u25C6 PostgreSQL \u25C6 REST APIs \u25C6 ';
+const marqueeItems = 'React \u25C6 Next.js \u25C6 TypeScript \u25C6 Tailwind CSS \u25C6 Framer Motion \u25C6 GSAP \u25C6 Three.js \u25C6 WebGL \u25C6 Node.js \u25C6 Express \u25C6 MongoDB \u25C6 PostgreSQL \u25C6 REST APIs \u25C6 ';
 
 const projectCards = [
-  {
-    category: 'Corporate Website',
-    title: 'IBS',
-    desc: 'IBS business website designed for credibility, services, partners, and lead generation.',
-    tags: 'Next.js \u00B7 TypeScript \u00B7 Tailwind CSS',
-  },
-  {
-    category: 'B2B Marketing Platform',
-    title: 'Corporate Lead-Gen Platform',
-    desc: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.',
-    tags: 'React \u00B7 Next.js \u00B7 Framer Motion',
-  },
-  {
-    category: 'Interactive Web App',
-    title: 'Aadi Card',
-    desc: 'An interactive digital card experience with micro-animations and gesture-driven UI.',
-    tags: 'React \u00B7 CSS Animations \u00B7 JavaScript',
-  },
-  {
-    category: 'Analytics Dashboard',
-    title: 'Pulse Dashboard',
-    desc: 'Pulse Dashboard, a real-time analytics interface with responsive data views.',
-    tags: 'Next.js \u00B7 Chart.js \u00B7 Tailwind CSS',
-  },
+  { category: 'Corporate Website', title: 'IBS', desc: 'IBS business website designed for credibility, services, partners, and lead generation.', tags: 'Next.js \u00B7 TypeScript \u00B7 Tailwind CSS' },
+  { category: 'B2B Marketing Platform', title: 'Corporate Lead-Gen Platform', desc: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.', tags: 'React \u00B7 Next.js \u00B7 Framer Motion' },
+  { category: 'Interactive Web App', title: 'Aadi Card', desc: 'An interactive digital card experience with micro-animations and gesture-driven UI.', tags: 'React \u00B7 CSS Animations \u00B7 JavaScript' },
+  { category: 'Analytics Dashboard', title: 'Pulse Dashboard', desc: 'Pulse Dashboard, a real-time analytics interface with responsive data views.', tags: 'Next.js \u00B7 Chart.js \u00B7 Tailwind CSS' },
 ];
 
 const engagementCards = [
-  {
-    title: 'Portfolio / Personal Website Build',
-    bullets: [
-      'Modern portfolio',
-      'Responsive layout',
-      'Smooth animations',
-      'SEO basics',
-      'Project case studies',
-    ],
-  },
-  {
-    title: 'Business / Corporate Website',
-    bullets: [
-      'Service pages',
-      'Contact flow',
-      'Trust sections',
-      'Performance optimization',
-      'Clean content structure',
-    ],
-  },
-  {
-    title: 'Interactive Landing Page',
-    bullets: [
-      '3D/WebGL hero',
-      'Motion system',
-      'Scroll-based sections',
-      'Conversion-focused CTA',
-    ],
-  },
-  {
-    title: 'Dashboard / Web App UI',
-    bullets: [
-      'Data cards',
-      'Responsive dashboard',
-      'Component system',
-      'Clean frontend architecture',
-    ],
-  },
+  { title: 'Portfolio / Personal Website Build', bullets: ['Modern portfolio', 'Responsive layout', 'Smooth animations', 'SEO basics', 'Project case studies'] },
+  { title: 'Business / Corporate Website', bullets: ['Service pages', 'Contact flow', 'Trust sections', 'Performance optimization', 'Clean content structure'] },
+  { title: 'Interactive Landing Page', bullets: ['3D/WebGL hero', 'Motion system', 'Scroll-based sections', 'Conversion-focused CTA'] },
+  { title: 'Dashboard / Web App UI', bullets: ['Data cards', 'Responsive dashboard', 'Component system', 'Clean frontend architecture'] },
 ];
 
 const caseStudies = [
-  {
-    number: '01',
-    category: 'Corporate \u00B7 Business Website',
-    title: 'IBS Corporate Website',
-    outcome:
-      'Corporate business website designed for credibility, services, partners, and lead generation.',
-    tags: 'Next.js \u00B7 TypeScript \u00B7 Tailwind CSS',
-    href: '/work/ibs',
-  },
-  {
-    number: '02',
-    category: 'B2B Marketing \u00B7 Lead Generation',
-    title: 'Corporate Lead-Gen Platform',
-    outcome:
-      'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.',
-    tags: 'React \u00B7 Next.js \u00B7 Framer Motion',
-    href: '/work/corporate-leadgen-platform',
-  },
+  { number: '01', category: 'Corporate \u00B7 Business Website', title: 'IBS Corporate Website', outcome: 'Corporate business website designed for credibility, services, partners, and lead generation.', tags: 'Next.js \u00B7 TypeScript \u00B7 Tailwind CSS', href: '/work/ibs' },
+  { number: '02', category: 'B2B Marketing \u00B7 Lead Generation', title: 'Corporate Lead-Gen Platform', outcome: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.', tags: 'React \u00B7 Next.js \u00B7 Framer Motion', href: '/work/corporate-leadgen-platform' },
 ];
 
 const workItems = [
-  {
-    title: 'IBS',
-    desc: 'IBS business website designed for credibility, services, partners, and lead generation.',
-    tags: 'Next.js \u00B7 TypeScript \u00B7 Tailwind CSS',
-    live: '#',
-    caseStudy: '/work/ibs',
-  },
-  {
-    title: 'Corporate Lead-Gen Platform',
-    desc: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.',
-    tags: 'React \u00B7 Next.js \u00B7 Framer Motion',
-    live: 'https://corporate-leadgen-platform-jet.vercel.app/',
-    caseStudy: '/work/corporate-leadgen-platform',
-  },
-  {
-    title: 'Aadi Card',
-    desc: 'An interactive digital card experience with micro-animations and gesture-driven UI.',
-    tags: 'React \u00B7 CSS Animations \u00B7 JavaScript',
-    live: 'https://aadi-card.vercel.app/',
-    caseStudy: '/work/aadi-card',
-  },
-  {
-    title: 'Pulse Dashboard',
-    desc: 'Pulse Dashboard, a real-time analytics interface with responsive data views.',
-    tags: 'Next.js \u00B7 Chart.js \u00B7 Tailwind CSS',
-    live: 'https://pulse-aadi-project.vercel.app/',
-    caseStudy: '/work/pulse-dashboard',
-  },
+  { title: 'IBS', desc: 'IBS business website designed for credibility, services, partners, and lead generation.', tags: 'Next.js \u00B7 TypeScript \u00B7 Tailwind CSS', live: 'https://ibs-com-aadi.vercel.app/', caseStudy: '/work/ibs' },
+  { title: 'Corporate Lead-Gen Platform', desc: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.', tags: 'React \u00B7 Next.js \u00B7 Framer Motion', live: 'https://corporate-leadgen-platform-jet.vercel.app/', caseStudy: '/work/corporate-leadgen-platform' },
+  { title: 'Aadi Card', desc: 'An interactive digital card experience with micro-animations and gesture-driven UI.', tags: 'React \u00B7 CSS Animations \u00B7 JavaScript', live: 'https://aadi-card.vercel.app/', caseStudy: '/work/aadi-card' },
+  { title: 'Pulse Dashboard', desc: 'Pulse Dashboard, a real-time analytics interface with responsive data views.', tags: 'Next.js \u00B7 Chart.js \u00B7 Tailwind CSS', live: 'https://pulse-aadi-project.vercel.app/', caseStudy: '/work/pulse-dashboard' },
 ];
 
 const processCards = [
-  {
-    number: '01',
-    title: 'Understand the outcome',
-    desc: 'I start by understanding what you actually need to ship and who it needs to reach.',
-  },
-  {
-    number: '02',
-    title: 'Design the system',
-    desc: 'Layout, structure, interactions, and visual system — all planned before a single line of code.',
-  },
-  {
-    number: '03',
-    title: 'Build and polish',
-    desc: 'Pixel-perfect implementation with real animations, responsive behaviour, and performance baked in.',
-  },
-  {
-    number: '04',
-    title: 'Ship clean',
-    desc: 'Delivered code that is maintainable, well-structured, and production-ready from day one.',
-  },
+  { number: '01', title: 'Understand the outcome', desc: 'Before design or code, I clarify what the page needs to achieve: trust, leads, clarity, speed, or a better product impression.' },
+  { number: '02', title: 'Design the system', desc: 'I turn rough ideas into layouts, sections, components, spacing, typography, and motion rules.' },
+  { number: '03', title: 'Build and polish', desc: 'I build the frontend, wire interactions, optimize responsiveness, and make the page feel smooth on real devices.' },
+  { number: '04', title: 'Ship clean', desc: 'I check performance, accessibility, SEO basics, links, mobile layout, and final deployment readiness.' },
 ];
 
 const specRows = [
-  { label: 'Based', value: 'Delhi, India' },
-  { label: 'Mode', value: 'Remote \u00B7 India / Intl' },
-  { label: 'Engage', value: 'Freelance / Contract / Projects' },
-  { label: 'Stack', value: 'React \u00B7 Next \u00B7 Three.js' },
-  { label: 'Status', value: 'Available' },
+  { label: 'BASED', value: 'Delhi, India' },
+  { label: 'MODE', value: 'Remote \u00B7 India / Intl' },
+  { label: 'ENGAGE', value: 'Freelance / Projects' },
+  { label: 'STACK', value: 'React \u00B7 Next \u00B7 Three.js' },
+  { label: 'STATUS', value: 'Available' },
 ];
 
-/* ═══════════════════════════════════════════════════════════════
-   PAGE COMPONENT
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════ */
+
 export default function Home() {
   return (
     <>
       {/* ─── SECTION 1: HERO ─── */}
-      <AnimatedSection className="pt-32 pb-20 max-w-7xl mx-auto px-6">
-        <motion.p
-          variants={fadeUp}
-          className="font-[family-name:var(--font-mono)] text-sm text-accent tracking-widest uppercase"
-        >
-          Front-End Developer &middot; UI/UX Designer &middot; Creative Engineer
-        </motion.p>
-
-        <motion.h1
-          variants={fadeUp}
-          className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] mt-6"
-        >
-          You have an idea.
-          <br />
-          I make it feel real.
-        </motion.h1>
-
-        <motion.p
-          variants={fadeUp}
-          className="text-text-muted text-lg max-w-2xl mt-6"
-        >
-          I craft high-performance digital interfaces and immersive 3D web
-          experiences that leave a lasting impression. Focused on immersive
-          experiences, working remotely from India, turning ideas into
-          interactive reality.
-        </motion.p>
-
-        <motion.div
-          variants={fadeUp}
-          className="flex flex-wrap gap-4 mt-8 items-center"
-        >
-          <Link
-            href="/work"
-            className="border border-border px-6 py-3 text-sm hover:border-accent transition-colors"
-          >
-            See the work &darr;
-          </Link>
-          <a
-            href="mailto:hi.aditya.dev@gmail.com"
-            className="bg-accent text-bg-primary px-6 py-3 text-sm font-medium hover:bg-accent-dark transition-colors"
-          >
-            Email me &rarr;
-          </a>
-          <a
-            href="https://github.com/witejackel-eng"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-text-muted text-sm hover:text-text-primary transition-colors underline"
-          >
-            GitHub &nearr;
-          </a>
-        </motion.div>
-
-        {/* Developer spec card */}
-        <motion.div
-          variants={fadeUp}
-          className="bg-bg-surface border border-border p-5 max-w-sm mt-8 rounded"
-        >
-          <p className="font-[family-name:var(--font-mono)] text-xs text-accent uppercase tracking-widest mb-3">
-            Developer spec
-          </p>
-          <div className="flex flex-col gap-2">
-            {specRows.map((row) => (
-              <div key={row.label} className="flex gap-2">
-                <span className="font-[family-name:var(--font-mono)] text-xs text-text-muted shrink-0">
-                  {row.label}:
+      <section className="pt-[100px] pb-20 max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+          {/* Left column */}
+          <div className="lg:col-span-7">
+            <AnimatedSection>
+              <motion.div variants={fadeUp} className="flex items-center gap-2 mb-6">
+                <span className="w-3 h-3 bg-maroon inline-block" />
+                <span className="font-[family-name:var(--font-mono)] text-xs text-text-muted tracking-widest uppercase">
+                  FRONT-END DEVELOPER &middot; UI/UX DESIGNER &middot; CREATIVE ENGINEER
                 </span>
-                <span className="text-sm text-text-primary">{row.value}</span>
-              </div>
-            ))}
+              </motion.div>
+
+              <motion.h1
+                variants={fadeUp}
+                className="text-[clamp(2.5rem,7vw,5.5rem)] font-black uppercase tracking-tighter leading-[0.95]"
+              >
+                <span className="block text-text-primary">YOU HAVE</span>
+                <span className="block text-text-primary">AN IDEA.</span>
+                <span className="inline-block bg-maroon text-white px-2 py-0.5 mt-1">I MAKE IT</span>
+                <span className="block text-text-primary">REAL.</span>
+              </motion.h1>
+
+              <motion.p
+                variants={fadeUp}
+                className="text-text-muted text-base md:text-lg max-w-xl mt-8 leading-relaxed"
+              >
+                I craft high-performance digital interfaces and immersive web experiences that turn rough ideas into polished, interactive products.
+              </motion.p>
+
+              <motion.div variants={fadeUp} className="flex flex-wrap gap-4 mt-8 items-center">
+                <Link
+                  href="/work"
+                  className="bg-white text-text-primary border border-border-hard px-5 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest hover:bg-maroon hover:text-white hover:border-maroon transition-all duration-200 shadow-hard-sm"
+                >
+                  SEE THE WORK &darr;
+                </Link>
+                <a
+                  href="mailto:hi.aditya.dev@gmail.com"
+                  className="bg-maroon text-white border border-border-hard px-5 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard hover:bg-maroon-dark transition-colors duration-200"
+                >
+                  EMAIL ME &rarr;
+                </a>
+                <a
+                  href="https://github.com/witejackel-eng"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-text-primary text-sm underline underline-offset-4 hover:text-maroon transition-colors duration-200"
+                >
+                  GITHUB &nearr;
+                </a>
+              </motion.div>
+            </AnimatedSection>
           </div>
-          <span className="bg-accent/10 text-accent border border-accent/30 px-3 py-1 text-xs font-[family-name:var(--font-mono)] rounded-full inline-block mt-3">
-            Available for Projects
-          </span>
-        </motion.div>
-      </AnimatedSection>
+
+          {/* Right column — Spec card */}
+          <div className="lg:col-span-5 lg:pt-4">
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }}
+            >
+              <div className="bg-white border border-border-hard shadow-hard relative">
+                {/* Side badge */}
+                <div className="absolute -right-3 top-4 bg-text-primary text-white px-2 py-4 flex flex-col items-center gap-1 z-10">
+                  <span className="text-xs font-bold">A.</span>
+                  <span className="text-[8px] uppercase tracking-widest" style={{ writingMode: 'vertical-rl' }}>Portfolio</span>
+                </div>
+
+                {/* Title bar */}
+                <div className="bg-maroon text-white border-b border-border-hard px-5 py-3">
+                  <span className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-widest font-medium">
+                    DEVELOPER SPEC
+                  </span>
+                </div>
+
+                {/* Rows */}
+                <div className="divide-y divide-border">
+                  {specRows.map((row) => (
+                    <div key={row.label} className="flex items-center justify-between px-5 py-3">
+                      <span className="font-[family-name:var(--font-mono)] text-[11px] text-text-muted uppercase tracking-wider">
+                        {row.label}
+                      </span>
+                      <span className="text-sm text-text-primary font-medium">
+                        {row.value}
+                        {row.label === 'STATUS' && (
+                          <span className="inline-block w-2 h-2 rounded-full bg-green-600 ml-2 align-middle" />
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       {/* ─── SECTION 2: TECH MARQUEE ─── */}
-      <div className="py-12 border-y border-border overflow-hidden">
+      <div className="py-10 border-y border-border overflow-hidden">
         <div className="animate-marquee flex gap-8 whitespace-nowrap">
-          <span className="text-text-muted/50 text-sm tracking-wide">
-            {marqueeItems}
-            {marqueeItems}
-          </span>
-          <span className="text-text-muted/50 text-sm tracking-wide" aria-hidden>
-            {marqueeItems}
-            {marqueeItems}
-          </span>
+          <span className="text-text-muted/40 text-sm tracking-wide">{marqueeItems}{marqueeItems}</span>
+          <span className="text-text-muted/40 text-sm tracking-wide" aria-hidden>{marqueeItems}{marqueeItems}</span>
         </div>
       </div>
 
       {/* ─── SECTION 3: PROOF, NOT ADJECTIVES ─── */}
       <AnimatedSection className="py-24 max-w-7xl mx-auto px-6">
-        <motion.p
-          variants={fadeUp}
-          className="font-[family-name:var(--font-mono)] text-xs text-accent uppercase tracking-widest mb-4"
-        >
+        <motion.p variants={fadeUp} className="font-[family-name:var(--font-mono)] text-xs text-maroon uppercase tracking-widest mb-4">
           Proof, not adjectives
         </motion.p>
-        <motion.h2
-          variants={fadeUp}
-          className="text-3xl md:text-4xl font-bold mb-12"
-        >
+        <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold mb-12 text-text-primary">
           What I ship.
         </motion.h2>
         <div className="md:grid-cols-2 gap-4 grid">
@@ -322,16 +210,21 @@ export default function Home() {
             <motion.div
               key={card.title}
               variants={fadeUp}
-              className="bg-bg-surface border border-border p-6 hover:border-accent/30 transition-all duration-300 group"
+              className="bg-white border border-border-hard p-6 hover:-translate-y-1 hover:shadow-hard-hover transition-all duration-200 group relative overflow-hidden"
             >
-              <p className="font-[family-name:var(--font-mono)] text-xs text-accent mb-2">
+              <div className="absolute top-0 left-0 w-full h-1 bg-maroon opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+              <p className="font-[family-name:var(--font-mono)] text-[11px] text-maroon uppercase tracking-widest mb-2">
                 {card.category}
               </p>
-              <h3 className="text-xl font-bold mb-2">{card.title}</h3>
-              <p className="text-text-muted text-sm">{card.desc}</p>
-              <p className="font-[family-name:var(--font-mono)] text-xs text-text-muted mt-4">
-                {card.tags}
-              </p>
+              <h3 className="text-xl font-bold mb-2 text-text-primary">{card.title}</h3>
+              <p className="text-text-muted text-sm leading-relaxed">{card.desc}</p>
+              <div className="flex flex-wrap gap-2 mt-4">
+                {card.tags.split(' \u00B7 ').map((tag) => (
+                  <span key={tag} className="bg-maroon-soft text-maroon font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wider px-2 py-1">
+                    {tag}
+                  </span>
+                ))}
+              </div>
             </motion.div>
           ))}
         </div>
@@ -339,27 +232,17 @@ export default function Home() {
 
       {/* ─── SECTION 4: TYPICAL ENGAGEMENTS ─── */}
       <AnimatedSection className="py-24 max-w-7xl mx-auto px-6">
-        <motion.h2
-          variants={fadeUp}
-          className="text-3xl md:text-4xl font-bold mb-12"
-        >
+        <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold mb-12 text-text-primary">
           How you can hire me.
         </motion.h2>
         <div className="md:grid-cols-2 gap-4 grid">
           {engagementCards.map((card) => (
-            <motion.div
-              key={card.title}
-              variants={fadeUp}
-              className="bg-bg-surface border border-border p-6"
-            >
-              <h3 className="text-lg font-bold mb-4">{card.title}</h3>
+            <motion.div key={card.title} variants={fadeUp} className="bg-white border border-border-hard p-6 shadow-hard-sm">
+              <h3 className="text-lg font-bold mb-4 text-text-primary">{card.title}</h3>
               <ul className="flex flex-col gap-2">
                 {card.bullets.map((bullet) => (
-                  <li
-                    key={bullet}
-                    className="text-text-muted text-sm flex items-start gap-2"
-                  >
-                    <span className="text-accent mt-1 shrink-0">&#x25AA;</span>
+                  <li key={bullet} className="text-text-muted text-sm flex items-start gap-2">
+                    <span className="text-maroon mt-1 shrink-0">&#x25AA;</span>
                     {bullet}
                   </li>
                 ))}
@@ -368,10 +251,7 @@ export default function Home() {
           ))}
         </div>
         <motion.div variants={fadeUp} className="mt-10">
-          <Link
-            href="/contact"
-            className="text-accent hover:underline inline-block"
-          >
+          <Link href="/contact" className="text-maroon hover:underline inline-block font-[family-name:var(--font-mono)] text-sm uppercase tracking-widest">
             Start a project &rarr;
           </Link>
         </motion.div>
@@ -379,10 +259,7 @@ export default function Home() {
 
       {/* ─── SECTION 5: SELECTED CASE STUDIES ─── */}
       <AnimatedSection className="py-24 max-w-7xl mx-auto px-6">
-        <motion.p
-          variants={fadeUp}
-          className="font-[family-name:var(--font-mono)] text-xs text-accent uppercase tracking-widest mb-4"
-        >
+        <motion.p variants={fadeUp} className="font-[family-name:var(--font-mono)] text-xs text-maroon uppercase tracking-widest mb-4">
           Selected work
         </motion.p>
         <div className="flex flex-col gap-6">
@@ -390,32 +267,25 @@ export default function Home() {
             <motion.div
               key={study.number}
               variants={fadeUp}
-              className="border border-border p-6 md:p-8 hover:border-accent/30 transition-all group"
+              className="bg-white border border-border-hard p-6 md:p-8 hover:-translate-y-1 hover:shadow-hard-hover transition-all duration-200 group relative overflow-hidden"
             >
+              <div className="absolute bottom-0 left-0 w-full h-1 bg-maroon opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
               <p className="font-[family-name:var(--font-mono)] text-xs text-text-muted">
                 {study.number} &mdash; {study.category}
               </p>
-              <h3 className="text-2xl md:text-3xl font-bold mt-2 group-hover:text-accent transition-colors">
+              <h3 className="text-2xl md:text-3xl font-bold mt-2 text-text-primary group-hover:text-maroon transition-colors duration-200">
                 {study.title}
               </h3>
               <p className="text-text-muted mt-2">{study.outcome}</p>
-              <p className="font-[family-name:var(--font-mono)] text-xs text-text-muted mt-4">
-                {study.tags}
-              </p>
-              <Link
-                href={study.href}
-                className="text-accent text-sm mt-4 inline-block hover:underline"
-              >
+              <p className="font-[family-name:var(--font-mono)] text-xs text-text-muted mt-4">{study.tags}</p>
+              <Link href={study.href} className="text-maroon text-sm mt-4 inline-block hover:underline font-[family-name:var(--font-mono)] uppercase tracking-widest">
                 Read the full case &rarr;
               </Link>
             </motion.div>
           ))}
         </div>
         <motion.div variants={fadeUp} className="mt-8">
-          <Link
-            href="/work"
-            className="text-accent hover:underline inline-block"
-          >
+          <Link href="/work" className="text-maroon hover:underline inline-block font-[family-name:var(--font-mono)] text-sm uppercase tracking-widest">
             See all work &amp; projects &rarr;
           </Link>
         </motion.div>
@@ -423,26 +293,14 @@ export default function Home() {
 
       {/* ─── SECTION 6: WHAT I ACTUALLY DO ─── */}
       <AnimatedSection className="py-24 max-w-7xl mx-auto px-6">
-        <motion.p
-          variants={fadeUp}
-          className="font-[family-name:var(--font-mono)] text-xs text-accent uppercase tracking-widest"
-        >
+        <motion.p variants={fadeUp} className="font-[family-name:var(--font-mono)] text-xs text-maroon uppercase tracking-widest">
           What I actually do
         </motion.p>
-        <motion.h2
-          variants={fadeUp}
-          className="text-3xl md:text-4xl font-bold mt-4 mb-6"
-        >
+        <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold mt-4 mb-6 text-text-primary">
           I turn unclear ideas into interfaces people can use.
         </motion.h2>
-        <motion.p
-          variants={fadeUp}
-          className="text-text-muted max-w-2xl text-lg leading-relaxed"
-        >
-          Some projects start as a rough idea, a messy layout, or a website
-          that does not feel good enough. I structure the page, design the
-          interaction, build the frontend, and polish the experience until it
-          feels clear, fast, and ready to show.
+        <motion.p variants={fadeUp} className="text-text-muted max-w-2xl text-lg leading-relaxed">
+          Some projects start as a rough idea, a messy layout, or a website that does not feel good enough. I structure the page, design the interaction, build the frontend, and polish the experience until it feels clear, fast, and ready to show.
         </motion.p>
 
         <div className="mt-12 flex flex-col">
@@ -452,32 +310,24 @@ export default function Home() {
               variants={fadeUp}
               className="border-b border-border py-8 flex flex-col md:flex-row md:items-start gap-4 group"
             >
-              <span className="font-[family-name:var(--font-mono)] text-text-muted text-sm shrink-0">
-                {String(i + 1).padStart(2, '0')}
-              </span>
+              <span className="font-[family-name:var(--font-mono)] text-text-muted text-sm shrink-0">{String(i + 1).padStart(2, '0')}</span>
               <div className="flex-1">
-                <h3 className="text-xl font-bold group-hover:text-accent transition-colors">
-                  {item.title}
-                </h3>
-                <p className="text-text-muted text-sm mt-1">{item.desc}</p>
-                <p className="font-[family-name:var(--font-mono)] text-xs text-text-muted mt-2">
-                  {item.tags}
-                </p>
+                <h3 className="text-xl font-bold text-text-primary group-hover:text-maroon transition-colors duration-200">{item.title}</h3>
+                <p className="text-text-muted text-sm mt-1 leading-relaxed">{item.desc}</p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {item.tags.split(' \u00B7 ').map((tag) => (
+                    <span key={tag} className="bg-maroon-soft text-maroon font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wider px-2 py-0.5">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
               <div className="flex gap-4 shrink-0 text-sm">
-                <a
-                  href={item.live}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-accent hover:underline"
-                >
-                  Live &nearr;
+                <a href={item.live} target="_blank" rel="noopener noreferrer" className="text-maroon hover:underline font-[family-name:var(--font-mono)] uppercase tracking-widest text-xs">
+                  VIEW PROJECT &rarr;
                 </a>
-                <Link
-                  href={item.caseStudy}
-                  className="text-text-muted hover:text-text-primary transition-colors"
-                >
-                  Case study &rarr;
+                <Link href={item.caseStudy} className="text-text-muted hover:text-text-primary transition-colors font-[family-name:var(--font-mono)] uppercase tracking-widest text-xs">
+                  CASE STUDY &rarr;
                 </Link>
               </div>
             </motion.div>
@@ -487,31 +337,17 @@ export default function Home() {
 
       {/* ─── SECTION 7: WHO YOU'D BE WORKING WITH ─── */}
       <AnimatedSection className="py-24 max-w-7xl mx-auto px-6">
-        <motion.h2
-          variants={fadeUp}
-          className="text-3xl md:text-4xl font-bold"
-        >
+        <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold text-text-primary">
           Who you&apos;d be working with
         </motion.h2>
-        <motion.p
-          variants={fadeUp}
-          className="text-text-muted max-w-2xl text-lg mt-6 leading-relaxed"
-        >
-          I&apos;m Aditya &mdash; a Front-End Developer &amp; UI/UX Designer
-          based in Delhi, India. I specialize in building high-performance,
-          accessible, and visually compelling digital products. Every project
-          starts from the same question: what does this interface need to do,
-          and what is the fastest, clearest way to let it do that.
+        <motion.p variants={fadeUp} className="text-text-muted max-w-2xl text-lg mt-6 leading-relaxed">
+          I&apos;m Aditya &mdash; a Front-End Developer &amp; UI/UX Designer based in Delhi, India. I specialize in building high-performance, accessible, and visually compelling digital products. Every project starts from the same question: what does this interface need to do, and what is the fastest, clearest way to let it do that.
         </motion.p>
-        <motion.p variants={fadeUp} className="text-text-muted mt-4">
-          When I&apos;m not coding, I&apos;m exploring new design trends,
-          gaming, or experimenting with creative coding and 3D web experiences.
+        <motion.p variants={fadeUp} className="text-text-muted mt-4 leading-relaxed">
+          When I&apos;m not coding, I&apos;m exploring new design trends, gaming, or experimenting with creative coding and 3D web experiences.
         </motion.p>
         <motion.div variants={fadeUp} className="mt-8">
-          <Link
-            href="/about"
-            className="text-accent hover:underline inline-block"
-          >
+          <Link href="/about" className="text-maroon hover:underline inline-block font-[family-name:var(--font-mono)] text-sm uppercase tracking-widest">
             Read the full story &rarr;
           </Link>
         </motion.div>
@@ -521,24 +357,15 @@ export default function Home() {
       <AnimatedSection className="py-24 max-w-7xl mx-auto px-6">
         <div className="md:grid-cols-2 lg:grid-cols-4 gap-4 grid">
           {processCards.map((step) => (
-            <motion.div
-              key={step.number}
-              variants={fadeUp}
-              className="bg-bg-surface border border-border p-6"
-            >
-              <span className="font-[family-name:var(--font-mono)] text-accent text-3xl font-bold">
-                {step.number}
-              </span>
-              <h3 className="text-lg font-bold mt-2">{step.title}</h3>
-              <p className="text-text-muted text-sm mt-2">{step.desc}</p>
+            <motion.div key={step.number} variants={fadeUp} className="bg-white border border-border-hard p-6 shadow-hard-sm">
+              <span className="font-[family-name:var(--font-mono)] text-maroon text-3xl font-bold">{step.number}</span>
+              <h3 className="text-lg font-bold mt-2 text-text-primary">{step.title}</h3>
+              <p className="text-text-muted text-sm mt-2 leading-relaxed">{step.desc}</p>
             </motion.div>
           ))}
         </div>
         <motion.div variants={fadeUp} className="mt-10">
-          <Link
-            href="/contact"
-            className="text-accent hover:underline inline-block"
-          >
+          <Link href="/contact" className="text-maroon hover:underline inline-block font-[family-name:var(--font-mono)] text-sm uppercase tracking-widest">
             Start a project &rarr;
           </Link>
         </motion.div>
@@ -546,48 +373,35 @@ export default function Home() {
 
       {/* ─── SECTION 9: FINAL CTA ─── */}
       <AnimatedSection className="py-32 max-w-7xl mx-auto px-6 text-center">
-        <motion.p
-          variants={fadeUp}
-          className="font-[family-name:var(--font-mono)] text-xs text-accent uppercase tracking-widest"
-        >
+        <motion.p variants={fadeUp} className="font-[family-name:var(--font-mono)] text-xs text-maroon uppercase tracking-widest">
           Let&apos;s talk
         </motion.p>
-        <motion.h2
-          variants={fadeUp}
-          className="text-3xl md:text-5xl font-bold mt-6"
-        >
+        <motion.h2 variants={fadeUp} className="text-3xl md:text-5xl font-bold mt-6 text-text-primary">
           Have something that needs to look and feel better?
         </motion.h2>
-        <motion.p
-          variants={fadeUp}
-          className="text-text-muted max-w-xl mx-auto mt-6"
-        >
-          Send the short version. I&apos;ll understand the project, the current
-          problem, and what needs to ship.
+        <motion.p variants={fadeUp} className="text-text-muted max-w-xl mx-auto mt-6">
+          Send the short version. I&apos;ll understand the project, the current problem, and what needs to ship.
         </motion.p>
-        <motion.div
-          variants={fadeUp}
-          className="flex flex-wrap gap-4 justify-center mt-10"
-        >
+        <motion.div variants={fadeUp} className="flex flex-wrap gap-4 justify-center mt-10">
           <a
             href="mailto:hi.aditya.dev@gmail.com"
-            className="bg-accent text-bg-primary px-6 py-3 text-sm font-medium hover:bg-accent-dark transition-colors"
+            className="bg-maroon text-white border border-border-hard px-6 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard hover:bg-maroon-dark transition-colors duration-200"
           >
-            Send an email &rarr;
+            SEND AN EMAIL &rarr;
           </a>
           <a
             href="tel:+919310736542"
-            className="border border-border px-6 py-3 text-sm hover:border-accent transition-colors"
+            className="bg-white text-text-primary border border-border-hard px-6 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest shadow-hard-sm hover:bg-maroon hover:text-white hover:border-maroon transition-all duration-200"
           >
-            Call me &rarr;
+            CALL ME &rarr;
           </a>
           <a
             href="https://github.com/witejackel-eng"
             target="_blank"
             rel="noopener noreferrer"
-            className="border border-border px-6 py-3 text-sm hover:border-accent transition-colors"
+            className="bg-white text-text-primary border border-border-hard px-6 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest shadow-hard-sm hover:bg-maroon hover:text-white hover:border-maroon transition-all duration-200"
           >
-            GitHub &nearr;
+            GITHUB &nearr;
           </a>
         </motion.div>
       </AnimatedSection>

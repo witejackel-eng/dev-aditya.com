@@ -17,12 +17,12 @@ export default function AccessibilityPage() {
 
       <h2 className="text-xl font-bold mt-10">Accessibility features</h2>
       <ul className="mt-4 space-y-2 text-text-muted leading-relaxed">
-        <li className="flex gap-2"><span className="text-accent">—</span> Semantic HTML structure for proper content hierarchy</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> Full keyboard navigation support</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> Visible focus indicators on all interactive elements</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> High contrast text on dark background</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> ARIA labels on navigation and interactive components</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> Reduced motion support via prefers-reduced-motion</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> Semantic HTML structure for proper content hierarchy</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> Full keyboard navigation support</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> Visible focus indicators on all interactive elements</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> High contrast text on dark background</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> ARIA labels on navigation and interactive components</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> Reduced motion support via prefers-reduced-motion</li>
       </ul>
 
       <h2 className="text-xl font-bold mt-10">Technologies used</h2>
@@ -43,7 +43,7 @@ export default function AccessibilityPage() {
       <h2 className="text-xl font-bold mt-10">Contact</h2>
       <p className="text-text-muted mt-4 leading-relaxed">
         If you experience any accessibility issues or have feedback, contact me at{' '}
-        <a href="mailto:hi.aditya.dev@gmail.com" className="text-accent hover:underline">
+        <a href="mailto:hi.aditya.dev@gmail.com" className="text-maroon hover:underline">
           hi.aditya.dev@gmail.com
         </a>.
       </p>

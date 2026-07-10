@@ -13,20 +13,20 @@ export default function Content() {
 
       <h2 className="text-xl font-bold mt-10">What to offer</h2>
       <ul className="mt-4 space-y-2 text-text-muted leading-relaxed">
-        <li className="flex gap-2"><span className="text-accent">—</span> Website build with modern stack (Next.js, Tailwind CSS)</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> AI chatbot integration for FAQs and lead capture</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> Contact forms connected to email or CRM</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> Basic SEO setup (meta tags, sitemap, Open Graph)</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> Analytics integration if needed</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> Website build with modern stack (Next.js, Tailwind CSS)</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> AI chatbot integration for FAQs and lead capture</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> Contact forms connected to email or CRM</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> Basic SEO setup (meta tags, sitemap, Open Graph)</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> Analytics integration if needed</li>
       </ul>
 
       <h2 className="text-xl font-bold mt-10">Tools to start</h2>
       <ul className="mt-4 space-y-2 text-text-muted leading-relaxed">
-        <li className="flex gap-2"><span className="text-accent">—</span> Next.js for the website framework</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> Tailwind CSS for styling</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> Vercel for deployment</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> OpenAI API or similar for chatbot</li>
-        <li className="flex gap-2"><span className="text-accent">—</span> Resend or similar for transactional email</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> Next.js for the website framework</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> Tailwind CSS for styling</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> Vercel for deployment</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> OpenAI API or similar for chatbot</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> Resend or similar for transactional email</li>
       </ul>
 
       <h2 className="text-xl font-bold mt-10">Pricing starting point</h2>

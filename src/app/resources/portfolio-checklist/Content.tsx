@@ -26,7 +26,7 @@ export default function Content() {
       <ul className="mt-10 space-y-4">
         {items.map((item) => (
           <li key={item} className="flex items-start gap-3 text-text-muted leading-relaxed">
-            <span className="w-5 h-5 mt-0.5 border border-border rounded flex-shrink-0" />
+            <span className="w-5 h-5 mt-0.5 border border-border-hard rounded flex-shrink-0" />
             {item}
           </li>
         ))}

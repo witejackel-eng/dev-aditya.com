@@ -75,7 +75,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen flex flex-col bg-bg-primary text-text-primary">
+      <body className="min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased">
         <SmoothScroll>
           <Header />
           <main className="flex-1">{children}</main>

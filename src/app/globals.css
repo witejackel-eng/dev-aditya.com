@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-bg-primary: #070707;
-  --color-bg-surface: #111111;
-  --color-bg-surface-2: #151515;
-  --color-border: rgba(255, 255, 255, 0.10);
-  --color-border-hover: rgba(255, 255, 255, 0.20);
-  --color-text-primary: #F5F2EA;
-  --color-text-muted: #A8A29E;
-  --color-accent: #FF7A1A;
-  --color-accent-dark: #C94F00;
-  --color-accent-glow: rgba(255, 122, 26, 0.15);
+  --color-bg-primary: #FAFAF7;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-surface-2: #F3F0EA;
+  --color-border: rgba(17, 17, 17, 0.14);
+  --color-border-hard: #111111;
+  --color-text-primary: #080808;
+  --color-text-muted: #55514A;
+  --color-maroon: #7A1F2B;
+  --color-maroon-dark: #55131D;
+  --color-maroon-light: #9E2D3C;
+  --color-maroon-soft: #F4E4E6;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -21,22 +22,22 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: #070707;
-  color: #F5F2EA;
+  background-color: #FAFAF7;
+  color: #080808;
 }
 
 body {
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
-  background-color: #070707;
-  color: #F5F2EA;
+  background-color: #FAFAF7;
+  color: #080808;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
 ::selection {
-  background-color: rgba(255, 122, 26, 0.3);
-  color: #F5F2EA;
+  background-color: #F4E4E6;
+  color: #080808;
 }
 
 /* Scrollbar */
@@ -45,21 +46,21 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #070707;
+  background: #FAFAF7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(17, 17, 17, 0.2);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(17, 17, 17, 0.35);
 }
 
 /* Focus styles for accessibility */
 :focus-visible {
-  outline: 2px solid #FF7A1A;
+  outline: 2px solid #7A1F2B;
   outline-offset: 2px;
 }
 
@@ -93,4 +94,17 @@ body {
   .animate-marquee {
     animation: none;
   }
+}
+
+/* Hard shadow utility */
+.shadow-hard {
+  box-shadow: 4px 4px 0px #111111;
+}
+
+.shadow-hard-sm {
+  box-shadow: 2px 2px 0px #111111;
+}
+
+.shadow-hard-hover {
+  box-shadow: 6px 6px 0px #111111;
 }
