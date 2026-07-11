@@ -10,11 +10,11 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
     const lenis = new Lenis({
-      duration: isMobile ? 0.25 : 0.55,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
-      smoothWheel: !isMobile,
-      wheelMultiplier: 1.8,
-      touchMultiplier: 2.0,
+      duration: isMobile ? 0.4 : 0.8,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
       infinite: false,
     });
 
