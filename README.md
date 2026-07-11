@@ -23,10 +23,10 @@ This is a high-performance, SEO-optimized personal portfolio website built with 
 |---|---|
 | `/` | Home — Hero, proof cards, engagements, case studies, process, CTA |
 | `/work` | All projects with descriptions, tags, and links |
-| `/work/ibs` | Case study: IBS Corporate Website |
+| `/work/saffron-steam-experience` | Case study: Saffron & Steam Immersive Café Experience |
 | `/work/corporate-leadgen-platform` | Case study: B2B Lead-Gen Platform |
-| `/work/aadi-card` | Case study: Interactive Digital Card |
-| `/work/pulse-dashboard` | Case study: Real-Time Analytics Dashboard |
+| `/work/driftwear-ecommerce` | Case study: Driftwear Studio E-commerce |
+| `/work/real-estate-atelier` | Case study: Real Estate Atelier Luxury Advisory |
 | `/about` | Background, design philosophy, tech stack |
 | `/mentoring` | Project help for students and small businesses |
 | `/contact` | Contact form + direct contact info |
@@ -97,10 +97,10 @@ src/
 │   ├── work/
 │   │   ├── page.tsx            # Work listing
 │   │   ├── WorkContent.tsx     # Work page client component
-│   │   ├── ibs/page.tsx        # Case study 01
+│   │   ├── saffron-steam-experience/page.tsx  # Case study 01
 │   │   ├── corporate-leadgen-platform/page.tsx  # Case study 02
-│   │   ├── aadi-card/page.tsx  # Case study 03
-│   │   └── pulse-dashboard/page.tsx  # Case study 04
+│   │   ├── driftwear-ecommerce/page.tsx  # Case study 03
+│   │   └── real-estate-atelier/page.tsx  # Case study 04
 │   ├── about/                  # About page
 │   ├── mentoring/              # Project Help page
 │   ├── contact/                # Contact page + form

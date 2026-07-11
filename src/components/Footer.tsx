@@ -12,10 +12,10 @@ const pageLinks = [
 ];
 
 const projectLinks = [
-  { href: '/work/ibs', label: 'IBS' },
+  { href: '/work/saffron-steam-experience', label: 'Saffron & Steam' },
   { href: '/work/corporate-leadgen-platform', label: 'Corporate Lead-Gen Platform' },
-  { href: '/work/aadi-card', label: 'Aadi Card' },
-  { href: '/work/pulse-dashboard', label: 'Pulse Dashboard' },
+  { href: '/work/driftwear-ecommerce', label: 'Driftwear Studio' },
+  { href: '/work/real-estate-atelier', label: 'Real Estate Atelier' },
 ];
 
 export default function Footer() {

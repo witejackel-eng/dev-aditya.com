@@ -46,10 +46,10 @@ function AnimatedSection({ children, className = '' }: { children: React.ReactNo
 const marqueeItems = 'React \u25C6 Next.js \u25C6 TypeScript \u25C6 Tailwind CSS \u25C6 Framer Motion \u25C6 GSAP \u25C6 Three.js \u25C6 WebGL \u25C6 Node.js \u25C6 Express \u25C6 MongoDB \u25C6 PostgreSQL \u25C6 REST APIs \u25C6 ';
 
 const projectCards = [
-  { category: 'Corporate Website', title: 'IBS', desc: 'IBS business website designed for credibility, services, partners, and lead generation.', tags: 'Next.js \u00B7 TypeScript \u00B7 Tailwind CSS' },
+  { category: 'Immersive Experience', title: 'Saffron & Steam', desc: 'An immersive café website with WebGL hero, editorial typography, and day-to-night scroll sequences.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 GSAP' },
   { category: 'B2B Marketing Platform', title: 'Corporate Lead-Gen Platform', desc: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.', tags: 'React \u00B7 Next.js \u00B7 Framer Motion' },
-  { category: 'Interactive Web App', title: 'Aadi Card', desc: 'An interactive digital card experience with micro-animations and gesture-driven UI.', tags: 'React \u00B7 CSS Animations \u00B7 JavaScript' },
-  { category: 'Analytics Dashboard', title: 'Pulse Dashboard', desc: 'Pulse Dashboard, a real-time analytics interface with responsive data views.', tags: 'Next.js \u00B7 Chart.js \u00B7 Tailwind CSS' },
+  { category: 'E-commerce', title: 'Driftwear Studio', desc: 'An editorial e-commerce experience for relaxed clothing with full cart flow and Razorpay integration.', tags: 'Next.js \u00B7 TypeScript \u00B7 Zustand \u00B7 Tailwind CSS' },
+  { category: 'Real Estate', title: 'Real Estate Atelier', desc: 'A premium real estate advisory website with curated property collections and cinematic editorial design.', tags: 'Next.js \u00B7 TypeScript \u00B7 GSAP \u00B7 Framer Motion' },
 ];
 
 const engagementCards = [
@@ -60,15 +60,15 @@ const engagementCards = [
 ];
 
 const caseStudies = [
-  { number: '01', category: 'Corporate \u00B7 Business Website', title: 'IBS Corporate Website', outcome: 'Corporate business website designed for credibility, services, partners, and lead generation.', tags: 'Next.js \u00B7 TypeScript \u00B7 Tailwind CSS', href: '/work/ibs' },
+  { number: '01', category: 'Immersive \u00B7 Hospitality Experience', title: 'Saffron & Steam', outcome: 'An immersive café website with WebGL hero, editorial typography, and day-to-night scroll sequences.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 GSAP', href: '/work/saffron-steam-experience' },
   { number: '02', category: 'B2B Marketing \u00B7 Lead Generation', title: 'Corporate Lead-Gen Platform', outcome: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.', tags: 'React \u00B7 Next.js \u00B7 Framer Motion', href: '/work/corporate-leadgen-platform' },
 ];
 
 const workItems = [
-  { title: 'IBS', desc: 'IBS business website designed for credibility, services, partners, and lead generation.', tags: 'Next.js \u00B7 TypeScript \u00B7 Tailwind CSS', live: 'https://ibs-com-aadi.vercel.app/', caseStudy: '/work/ibs' },
+  { title: 'Saffron & Steam', desc: 'An immersive café website with WebGL hero, editorial typography, and day-to-night scroll sequences.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 GSAP', live: 'https://saffron-steam-experience.vercel.app/', caseStudy: '/work/saffron-steam-experience' },
   { title: 'Corporate Lead-Gen Platform', desc: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.', tags: 'React \u00B7 Next.js \u00B7 Framer Motion', live: 'https://corporate-leadgen-platform-jet.vercel.app/', caseStudy: '/work/corporate-leadgen-platform' },
-  { title: 'Aadi Card', desc: 'An interactive digital card experience with micro-animations and gesture-driven UI.', tags: 'React \u00B7 CSS Animations \u00B7 JavaScript', live: 'https://aadi-card.vercel.app/', caseStudy: '/work/aadi-card' },
-  { title: 'Pulse Dashboard', desc: 'Pulse Dashboard, a real-time analytics interface with responsive data views.', tags: 'Next.js \u00B7 Chart.js \u00B7 Tailwind CSS', live: 'https://pulse-aadi-project.vercel.app/', caseStudy: '/work/pulse-dashboard' },
+  { title: 'Driftwear Studio', desc: 'An editorial e-commerce experience for relaxed clothing with full cart flow and Razorpay integration.', tags: 'Next.js \u00B7 TypeScript \u00B7 Zustand \u00B7 Tailwind CSS', live: 'https://driftwear-ecommerce.vercel.app/', caseStudy: '/work/driftwear-ecommerce' },
+  { title: 'Real Estate Atelier', desc: 'A premium real estate advisory website with curated property collections and cinematic editorial design.', tags: 'Next.js \u00B7 TypeScript \u00B7 GSAP \u00B7 Framer Motion', live: 'https://real-estate-atelier.vercel.app/', caseStudy: '/work/real-estate-atelier' },
 ];
 
 const processCards = [
