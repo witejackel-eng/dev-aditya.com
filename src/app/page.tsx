@@ -1,8 +1,10 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
+import { packages, type PackageData } from '@/config/packages';
+import PackageEnquiryDialog from '@/components/PackageEnquiryDialog';
 
 /* ─── Animation variants ─── */
 const fadeUp = {
@@ -89,6 +91,19 @@ const specRows = [
 /* ═══════════════════════════════════════════════════════════════ */
 
 export default function Home() {
+  const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
+  const [selectedPkg, setSelectedPkg] = useState<PackageData | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+
+  const handleGetStarted = (pkg: PackageData, btn: HTMLButtonElement) => {
+    setSelectedPkg(pkg);
+    triggerRef.current = btn;
+    setIsEnquiryOpen(true);
+  };
+
+  const handleCloseEnquiry = () => {
+    setIsEnquiryOpen(false);
+  };
   return (
     <>
       {/* ─── SECTION 1: HERO ─── */}
@@ -282,105 +297,83 @@ export default function Home() {
                 </Link>
               </motion.div>
             </div>
+
+            {/* Introductory pricing notice */}
+            <motion.div variants={fadeUp} className="border-l-2 border-maroon pl-4 max-w-xl mt-6">
+              <p className="text-text-primary text-[14px] font-medium leading-[1.6]">
+                Introductory pricing for a limited number of new client projects.
+              </p>
+            </motion.div>
           </AnimatedSection>
 
           {/* 3 Package Cards */}
           <AnimatedSection className="mb-0">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {/* Starter */}
-              <motion.div variants={fadeUp} className="bg-bg-surface border border-border-hard p-6 md:p-7 shadow-hard-sm hover:shadow-hard-hover hover:-translate-y-1 transition-all duration-200 flex flex-col">
-                <div className="flex items-center justify-between mb-5">
-                  <span className="font-[family-name:var(--font-mono)] text-[10px] text-text-muted uppercase tracking-widest">01</span>
-                  <span className="font-[family-name:var(--font-mono)] text-[10px] text-maroon uppercase tracking-widest bg-maroon-soft px-2.5 py-1 font-medium">Starter</span>
-                </div>
-                <p className="text-3xl font-black text-text-primary tracking-tight">₹14,999</p>
-                <p className="font-[family-name:var(--font-mono)] text-[11px] text-text-muted mt-1">Starting price</p>
-                <p className="text-text-muted text-sm leading-relaxed mt-4 mb-6">
-                  A clean, professional single-page website designed to establish your online presence fast.
-                </p>
-                <ul className="flex flex-col gap-2.5 mb-8 flex-1">
-                  {['1 landing page / single-page site', 'Responsive design (mobile, tablet, desktop)', 'Basic SEO meta tags & Open Graph', 'Contact form / CTA integration', 'Up to 2 rounds of revisions', '1 week delivery'].map((item) => (
-                    <li key={item} className="text-text-muted text-[13px] flex items-start gap-2.5">
-                      <span className="text-maroon mt-0.5 shrink-0 text-xs">&#x2713;</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <a href="mailto:hi.aditya.dev@gmail.com?subject=Starter Package Inquiry" className="block text-center bg-white text-text-primary border border-border-hard px-5 py-3 text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest shadow-hard-sm hover:bg-maroon hover:text-white hover:border-maroon transition-all duration-200">
-                  GET STARTED &rarr;
-                </a>
-              </motion.div>
-
-              {/* Business — Featured */}
-              <motion.div variants={fadeUp} className="bg-bg-surface border-2 border-border-hard p-6 md:p-7 shadow-hard hover:shadow-hard-hover hover:-translate-y-1 transition-all duration-200 flex flex-col relative">
-                <div className="absolute -top-3 left-6 bg-maroon text-white px-3 py-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest font-medium border border-border-hard">
-                  Most Popular
-                </div>
-                <div className="flex items-center justify-between mb-5">
-                  <span className="font-[family-name:var(--font-mono)] text-[10px] text-text-muted uppercase tracking-widest">02</span>
-                  <span className="font-[family-name:var(--font-mono)] text-[10px] text-maroon uppercase tracking-widest bg-maroon-soft px-2.5 py-1 font-medium">Business</span>
-                </div>
-                <p className="text-3xl font-black text-text-primary tracking-tight">₹34,999</p>
-                <p className="font-[family-name:var(--font-mono)] text-[11px] text-text-muted mt-1">Starting price</p>
-                <p className="text-text-muted text-sm leading-relaxed mt-4 mb-6">
-                  A multi-page business website built for credibility, lead generation, and clear communication of your services.
-                </p>
-                <ul className="flex flex-col gap-2.5 mb-8 flex-1">
-                  {['Up to 5 pages (Home, About, Services, etc.)', 'Responsive + cross-browser tested', 'Full SEO setup (meta, sitemap, schema)', 'Contact form with spam protection', 'Smooth scroll animations', 'Up to 3 rounds of revisions', '2–3 week delivery'].map((item) => (
-                    <li key={item} className="text-text-muted text-[13px] flex items-start gap-2.5">
-                      <span className="text-maroon mt-0.5 shrink-0 text-xs">&#x2713;</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <a href="mailto:hi.aditya.dev@gmail.com?subject=Business Package Inquiry" className="block text-center bg-maroon text-white border border-border-hard px-5 py-3 text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard-sm hover:bg-maroon-dark transition-colors duration-200">
-                  GET STARTED &rarr;
-                </a>
-              </motion.div>
-
-              {/* Premium */}
-              <motion.div variants={fadeUp} className="bg-bg-surface border border-border-hard p-6 md:p-7 shadow-hard-sm hover:shadow-hard-hover hover:-translate-y-1 transition-all duration-200 flex flex-col">
-                <div className="flex items-center justify-between mb-5">
-                  <span className="font-[family-name:var(--font-mono)] text-[10px] text-text-muted uppercase tracking-widest">03</span>
-                  <span className="font-[family-name:var(--font-mono)] text-[10px] text-maroon uppercase tracking-widest bg-maroon-soft px-2.5 py-1 font-medium">Premium</span>
-                </div>
-                <p className="text-3xl font-black text-text-primary tracking-tight">₹74,999</p>
-                <p className="font-[family-name:var(--font-mono)] text-[11px] text-text-muted mt-1">Starting price</p>
-                <p className="text-text-muted text-sm leading-relaxed mt-4 mb-6">
-                  A full-scale web experience with custom interactions, advanced animations, and polished production quality.
-                </p>
-                <ul className="flex flex-col gap-2.5 mb-8 flex-1">
-                  {['Unlimited pages with full navigation', 'Custom UI/UX design system', 'Advanced animations (scroll, micro, page transitions)', 'Performance optimization (Core Web Vitals)', 'CMS / dynamic content integration', 'Up to 5 rounds of revisions', '3–5 week delivery', 'Priority support for 2 weeks post-launch'].map((item) => (
-                    <li key={item} className="text-text-muted text-[13px] flex items-start gap-2.5">
-                      <span className="text-maroon mt-0.5 shrink-0 text-xs">&#x2713;</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <a href="mailto:hi.aditya.dev@gmail.com?subject=Premium Package Inquiry" className="block text-center bg-white text-text-primary border border-border-hard px-5 py-3 text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest shadow-hard-sm hover:bg-maroon hover:text-white hover:border-maroon transition-all duration-200">
-                  GET STARTED &rarr;
-                </a>
-              </motion.div>
-            </div>
-          </AnimatedSection>
-
-          {/* Add-ons strip */}
-          <AnimatedSection className="mt-14 mb-0">
-            <p className="font-[family-name:var(--font-mono)] text-[10px] text-text-muted uppercase tracking-widest mb-5">Available Add-ons</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { name: 'Extra Page', price: '₹2,999/page' },
-                { name: 'CMS Integration', price: '₹9,999' },
-                { name: 'Custom Animations', price: '₹7,999' },
-                { name: 'Performance Audit', price: '₹4,999' },
-              ].map((addon) => (
-                <motion.div key={addon.name} variants={fadeUp} className="bg-bg-surface-2 border border-border p-4">
-                  <p className="text-sm font-medium text-text-primary">{addon.name}</p>
-                  <p className="font-[family-name:var(--font-mono)] text-[11px] text-maroon mt-1">{addon.price}</p>
+              {packages.map((pkg) => (
+                <motion.div
+                  key={pkg.id}
+                  variants={fadeUp}
+                  className={`bg-bg-surface flex flex-col relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-hard-hover ${
+                    pkg.recommended
+                      ? 'border-2 border-border-hard p-6 md:p-7 shadow-hard border-t-[3px] border-t-maroon'
+                      : 'border border-border-hard p-6 md:p-7 shadow-hard-sm'
+                  }`}
+                >
+                  {pkg.recommended && (
+                    <div className="absolute -top-3 left-6 bg-maroon text-white px-3 py-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest font-medium border border-border-hard">
+                      Most Popular
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between mb-5">
+                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-text-muted uppercase tracking-widest">{pkg.num}</span>
+                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-maroon uppercase tracking-widest bg-maroon-soft px-2.5 py-1 font-medium">{pkg.name}</span>
+                  </div>
+                  <p className="text-3xl font-black text-text-primary tracking-tight">{pkg.price}</p>
+                  <p className="font-[family-name:var(--font-mono)] text-[11px] text-text-muted mt-1">{pkg.priceNote}</p>
+                  <p className="text-text-muted text-sm leading-relaxed mt-4 mb-6">
+                    {pkg.description}
+                  </p>
+                  <ul className="flex flex-col gap-2.5 mb-8 flex-1">
+                    {pkg.includes.slice(0, 6).map((item) => (
+                      <li key={item} className="text-text-muted text-[13px] flex items-start gap-2.5">
+                        <span className="text-maroon mt-0.5 shrink-0 text-xs">&#x2713;</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    onClick={(e) => handleGetStarted(pkg, e.currentTarget)}
+                    aria-label={`Get Started with the ${pkg.name} package at ${pkg.price}`}
+                    className={`block w-full text-center px-5 py-3 text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium border border-border-hard transition-all duration-200 cursor-pointer ${
+                      pkg.recommended
+                        ? 'bg-maroon text-white shadow-hard-sm hover:bg-maroon-dark'
+                        : 'bg-white text-text-primary shadow-hard-sm hover:bg-maroon hover:text-white hover:border-maroon'
+                    }`}
+                  >
+                    GET STARTED &rarr;
+                  </button>
                 </motion.div>
               ))}
             </div>
+
+            {/* Scope exclusion note */}
+            <motion.div variants={fadeUp} className="mt-8 border-t border-border pt-6">
+              <p className="text-text-muted text-[13px] leading-[1.7] max-w-3xl">
+                E-commerce functionality, payment gateways, custom dashboards, authentication, databases, complex web applications, multilingual systems and third-party subscription costs are quoted separately.
+              </p>
+            </motion.div>
           </AnimatedSection>
+
+          {/* Payment terms */}
+          <div className="mt-12 border-t border-border pt-10">
+            <div className="flex items-center gap-4 mb-4">
+              <span className="font-[family-name:var(--font-mono)] text-2xl font-black text-text-primary">50<span className="text-maroon">/</span>50</span>
+              <div className="h-[2px] flex-1 bg-border-hard" />
+            </div>
+            <p className="text-text-muted text-[14px] leading-[1.7] max-w-2xl">
+              50% upfront confirms your booking and allows work to begin. The remaining 50% is payable after the approved website has been successfully deployed to your chosen hosting provider and domain.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -532,6 +525,14 @@ export default function Home() {
           </a>
         </motion.div>
       </AnimatedSection>
+
+      {/* ─── ENQUIRY DIALOG ─── */}
+      <PackageEnquiryDialog
+        isOpen={isEnquiryOpen}
+        onClose={handleCloseEnquiry}
+        pkg={selectedPkg}
+        triggerRef={triggerRef}
+      />
     </>
   );
 }
