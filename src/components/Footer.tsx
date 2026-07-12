@@ -3,6 +3,7 @@
 import Link from 'next/link';
 
 const pageLinks = [
+  { href: '/services', label: 'Services' },
   { href: '/work', label: 'Work' },
   { href: '/packages', label: 'Packages' },
   { href: '/about', label: 'About' },
@@ -33,10 +34,10 @@ export default function Footer() {
               ADITYA
             </h2>
             <p className="text-text-muted text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest mb-3">
-              Front-End Developer &amp; UI/UX Designer
+              Front-End Developer, UI/UX Designer &amp; Web Designer
             </p>
             <p className="text-text-muted text-base leading-relaxed max-w-md">
-              Building high-performance digital interfaces with precision engineering and intentional design.
+              Building premium, high-performance websites for service businesses, startups and independent brands in Delhi and worldwide.
             </p>
           </div>
 

@@ -1,20 +1,15 @@
 import { MetadataRoute } from 'next';
+import { getCanonicalOrigin } from '@/config/site';
+import { getIndexableRoutes } from '@/config/content-registry';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://dev-aditya.com';
+  const origin = getCanonicalOrigin();
+  const indexable = getIndexableRoutes();
 
-  const routes = [
-    '', '/work', '/packages', '/work/saffron-steam-experience', '/work/corporate-leadgen-platform',
-    '/work/driftwear-ecommerce', '/work/real-estate-atelier', '/about', '/mentoring',
-    '/contact', '/resources', '/resources/portfolio-checklist',
-    '/resources/ai-website-agency', '/resources/frontend-qa',
-    '/privacy', '/terms', '/accessibility',
-  ];
-
-  return routes.map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date('2026-07-10'),
-    changeFrequency: 'monthly' as const,
-    priority: route === '' ? 1 : route === '/work' ? 0.9 : 0.7,
+  return indexable.map((route) => ({
+    url: `${origin}${route.path}`,
+    lastModified: new Date(route.lastModified),
+    changeFrequency: route.changeFrequency,
+    priority: route.priority,
   }));
 }

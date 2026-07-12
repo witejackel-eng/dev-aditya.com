@@ -1,7 +1,6 @@
 'use client';
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import Link from 'next/link';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
@@ -39,12 +38,7 @@ export default function CaseStudyContent({
   built, proofText, honestMoment, timeline, stack, liveUrl, githubUrl,
 }: CaseStudyProps) {
   return (
-    <div className="max-w-4xl mx-auto px-6">
-      <div className="pt-32">
-        <Link href="/work" className="text-sm text-text-muted hover:text-maroon transition-colors font-[family-name:var(--font-mono)] uppercase tracking-widest">
-          &larr; All work
-        </Link>
-      </div>
+    <div className="max-w-4xl mx-auto px-6 pt-28 md:pt-32">
 
       <Section className="mt-8">
         <motion.p variants={fadeUp} className="font-[family-name:var(--font-mono)] text-xs text-text-muted">{meta}</motion.p>

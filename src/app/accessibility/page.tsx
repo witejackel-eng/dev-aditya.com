@@ -1,9 +1,11 @@
 import { Metadata } from 'next';
+import { generatePageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'Accessibility',
+export const metadata: Metadata = generatePageMetadata({
+  title: 'Accessibility Statement',
   description: 'Accessibility statement for the Aditya portfolio website.',
-};
+  path: '/accessibility',
+});
 
 export default function AccessibilityPage() {
   return (

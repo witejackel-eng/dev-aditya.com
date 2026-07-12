@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const navLinks = [
+  { href: '/services', label: 'SERVICES' },
   { href: '/work', label: 'WORK' },
   { href: '/packages', label: 'PACKAGES' },
   { href: '/about', label: 'ABOUT' },

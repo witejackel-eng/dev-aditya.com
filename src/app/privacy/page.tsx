@@ -1,9 +1,12 @@
 import { Metadata } from 'next';
+import { generatePageMetadata } from '@/lib/seo';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = generatePageMetadata({
   title: 'Privacy Policy',
   description: 'Privacy policy for the Aditya portfolio website.',
-};
+  path: '/privacy',
+  robots: { index: true, follow: true },
+});
 
 export default function PrivacyPage() {
   return (
