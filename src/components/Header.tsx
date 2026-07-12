@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const navLinks = [
   { href: '/work', label: 'WORK' },
   { href: '/packages', label: 'PACKAGES' },
+  { href: '/audit', label: 'AUDIT' },
   { href: '/about', label: 'ABOUT' },
   { href: '/mentoring', label: 'PROJECT HELP' },
   { href: '/resources', label: 'RESOURCES' },
@@ -47,7 +48,7 @@ export default function Header() {
         </Link>
 
         {/* Right: Nav + CTA */}
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-8">
           <nav className="flex items-center gap-7" aria-label="Main navigation">
             {navLinks.map((link) => (
               <Link
@@ -74,7 +75,7 @@ export default function Header() {
         {/* Mobile menu button */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden flex flex-col gap-1.5 p-2"
+          className="lg:hidden flex flex-col gap-1.5 p-2"
           aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileOpen}
         >
@@ -101,7 +102,7 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 top-[70px] bg-bg-primary border-x border-b border-border-hard md:hidden z-40 flex flex-col items-start px-6 py-8 gap-6"
+            className="fixed inset-0 top-[70px] bg-bg-primary border-x border-b border-border-hard lg:hidden z-40 flex flex-col items-start px-6 py-8 gap-6"
           >
             {navLinks.map((link, i) => (
               <motion.div

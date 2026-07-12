@@ -9,12 +9,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/contact', '/resources', '/resources/portfolio-checklist',
     '/resources/ai-website-agency', '/resources/frontend-qa',
     '/privacy', '/terms', '/accessibility',
+    '/audit',
   ];
 
   return routes.map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date('2026-07-10'),
     changeFrequency: 'monthly' as const,
-    priority: route === '' ? 1 : route === '/work' ? 0.9 : 0.7,
+    priority: route === '' ? 1 : route === '/work' ? 0.9 : route === '/audit' ? 0.8 : 0.7,
   }));
 }

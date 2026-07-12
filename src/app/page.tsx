@@ -212,6 +212,64 @@ export default function Home() {
         </div>
       </div>
 
+      {/* ─── SECTION 2.5: FREE WEBSITE REVENUE AUDIT ─── */}
+      <AnimatedSection className="py-20 bg-bg-surface-2 border-y border-border">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Left */}
+            <div className="lg:col-span-7">
+              <motion.p variants={fadeUp} className="font-[family-name:var(--font-mono)] text-xs text-maroon uppercase tracking-widest mb-4">
+                Free Website Revenue Audit
+              </motion.p>
+              <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-tight text-text-primary leading-[1.1]">
+                Find out what is holding your website back.
+              </motion.h2>
+              <motion.p variants={fadeUp} className="text-text-muted text-base mt-4 leading-relaxed max-w-lg">
+                Run a public-page audit covering mobile speed, SEO foundations, accessibility, security headers and conversion readiness.
+              </motion.p>
+            </div>
+            {/* Right - Compact form */}
+            <div className="lg:col-span-5">
+              <motion.div variants={fadeUp} className="bg-bg-surface border border-border-hard shadow-hard p-6">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const form = e.currentTarget;
+                    const urlInput = form.elements.namedItem('audit-url') as HTMLInputElement;
+                    const url = urlInput?.value?.trim();
+                    if (url) window.location.href = `/audit?url=${encodeURIComponent(url)}`;
+                  }}
+                  className="space-y-4"
+                >
+                  <div>
+                    <label htmlFor="audit-url" className="block font-[family-name:var(--font-mono)] text-xs uppercase tracking-widest text-text-muted mb-2">
+                      Website URL
+                    </label>
+                    <input
+                      id="audit-url"
+                      name="audit-url"
+                      type="url"
+                      placeholder="https://yourwebsite.com"
+                      required
+                      className="w-full border border-border-hard px-4 py-3 text-sm bg-white text-text-primary focus:outline-none focus:border-maroon transition-colors"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full bg-maroon text-white border border-border-hard px-5 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard-sm hover:bg-maroon-dark transition-colors"
+                  >
+                    Run Free Audit &rarr;
+                  </button>
+                  <p className="text-xs text-text-muted leading-relaxed">
+                    No password required. Only publicly available website information is analyzed.
+                  </p>
+                </form>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </AnimatedSection>
+
       {/* ─── SECTION 3: PROOF, NOT ADJECTIVES ─── */}
       <AnimatedSection className="py-24 max-w-7xl mx-auto px-6">
         <motion.p variants={fadeUp} className="font-[family-name:var(--font-mono)] text-xs text-maroon uppercase tracking-widest mb-4">
