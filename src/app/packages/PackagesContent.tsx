@@ -1,7 +1,8 @@
 'use client';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import Link from 'next/link';
+import { packages, type PackageData } from '@/config/packages';
+import PackageEnquiryDialog from '@/components/PackageEnquiryDialog';
 
 /* ─── Animation ─── */
 const fadeUp = {
@@ -21,73 +22,7 @@ function Reveal({ children, className = '' }: { children: React.ReactNode; class
   );
 }
 
-/* ─── Data ─── */
-const packages = [
-  {
-    num: '01',
-    name: 'Starter',
-    price: '₹14,999',
-    priceNote: 'Starting price',
-    tagline: 'For individuals and small projects that need a professional web presence — fast.',
-    ideal: ['Personal portfolios', 'Freelancer landing pages', 'Event or launch pages', 'Simple business cards online'],
-    includes: [
-      '1 landing page / single-page site',
-      'Responsive design (mobile, tablet, desktop)',
-      'Basic SEO meta tags & Open Graph',
-      'Contact form / CTA integration',
-      'Deployment to Vercel / Netlify / your host',
-      'Up to 2 rounds of revisions',
-      '1 week delivery',
-    ],
-    ctaSubject: 'Starter Package Inquiry',
-    featured: false,
-  },
-  {
-    num: '02',
-    name: 'Business',
-    price: '₹34,999',
-    priceNote: 'Starting price',
-    tagline: 'For businesses that need a credible, multi-page website that converts visitors into leads.',
-    ideal: ['Service-based businesses', 'Startups needing a polished web presence', 'Consultants & agencies', 'Companies updating an outdated site'],
-    includes: [
-      'Up to 5 pages (Home, About, Services, Contact, +1)',
-      'Responsive + cross-browser tested',
-      'Full SEO setup (meta, sitemap, schema markup)',
-      'Contact form with honeypot spam protection',
-      'Smooth scroll animations',
-      'Performance optimization basics',
-      'GitHub repository with clean commit history',
-      'Up to 3 rounds of revisions',
-      '2–3 week delivery',
-    ],
-    ctaSubject: 'Business Package Inquiry',
-    featured: true,
-  },
-  {
-    num: '03',
-    name: 'Premium',
-    price: '₹74,999',
-    priceNote: 'Starting price',
-    tagline: 'For brands that need a premium web experience with custom design, advanced interactions, and production-level polish.',
-    ideal: ['Brands launching a new product or service', 'Companies needing a standout web presence', 'SaaS landing pages with complex UI', 'Web apps with rich interaction design'],
-    includes: [
-      'Unlimited pages with full navigation system',
-      'Custom UI/UX design system (components, tokens, spacing)',
-      'Advanced animations (scroll-driven, micro-interactions, page transitions)',
-      'Performance optimization (Core Web Vitals target)',
-      'CMS / dynamic content integration (if needed)',
-      '3D / WebGL elements (if scope allows)',
-      'Accessibility audit (WCAG 2.1 AA basics)',
-      'GitHub repository with documentation',
-      'Up to 5 rounds of revisions',
-      '3–5 week delivery',
-      'Priority support for 2 weeks post-launch',
-    ],
-    ctaSubject: 'Premium Package Inquiry',
-    featured: false,
-  },
-];
-
+/* ─── Static data (unchanged sections) ─── */
 const addons = [
   { name: 'Extra Page', price: '₹2,999', unit: '/page', desc: 'Additional pages beyond your package limit.' },
   { name: 'CMS Integration', price: '₹9,999', unit: '', desc: 'Connect your site to a headless CMS like Sanity, Contentful, or Strapi for easy content updates.' },
@@ -109,6 +44,22 @@ const process = [
 /* ═══════════════════════════════════════════════════════════════ */
 
 export default function PackagesContent() {
+  const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
+  const [selectedPkg, setSelectedPkg] = useState<PackageData | null>(null);
+
+  /* Ref to the last Get Started button that was clicked — for focus restoration */
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+
+  const handleGetStarted = (pkg: PackageData, btn: HTMLButtonElement) => {
+    setSelectedPkg(pkg);
+    triggerRef.current = btn;
+    setIsEnquiryOpen(true);
+  };
+
+  const handleCloseEnquiry = () => {
+    setIsEnquiryOpen(false);
+  };
+
   return (
     <>
       {/* ═══ HERO ═══ */}
@@ -136,6 +87,21 @@ export default function PackagesContent() {
           >
             Clear scope, transparent pricing, no hidden costs. Pick a package that fits your project — or contact me for a custom quote.
           </motion.p>
+
+          {/* Introductory pricing notice */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.25 }}
+            className="mt-8 border-l-2 border-maroon pl-4 max-w-[540px]"
+          >
+            <p className="text-text-primary text-[14px] font-medium leading-[1.6]">
+              Introductory pricing for a limited number of new client projects.
+            </p>
+            <p className="text-text-muted text-[13px] leading-[1.6] mt-1">
+              Professional websites at launch-stage pricing while I build a select portfolio of client partnerships.
+            </p>
+          </motion.div>
         </div>
       </section>
 
@@ -143,19 +109,19 @@ export default function PackagesContent() {
       <section className="border-b border-border-hard">
         <div className="max-w-7xl mx-auto px-6 py-20 md:py-28">
           <Reveal className="mb-0">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {packages.map((pkg) => (
                 <motion.div
-                  key={pkg.num}
+                  key={pkg.id}
                   variants={fadeUp}
                   className={`bg-bg-surface flex flex-col relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-hard-hover ${
-                    pkg.featured
-                      ? 'border-2 border-border-hard shadow-hard p-6 md:p-8'
+                    pkg.recommended
+                      ? 'border-2 border-border-hard shadow-hard p-6 md:p-8 border-t-[3px] border-t-maroon'
                       : 'border border-border-hard shadow-hard-sm p-6 md:p-7'
                   }`}
                 >
-                  {/* Featured badge */}
-                  {pkg.featured && (
+                  {/* Recommended badge */}
+                  {pkg.recommended && (
                     <div className="absolute -top-3 left-6 bg-maroon text-white px-3 py-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest font-medium border border-border-hard z-10">
                       Most Popular
                     </div>
@@ -169,7 +135,7 @@ export default function PackagesContent() {
 
                   <p className="text-4xl font-black text-text-primary tracking-tight">{pkg.price}</p>
                   <p className="font-[family-name:var(--font-mono)] text-[11px] text-text-muted mt-1">{pkg.priceNote}</p>
-                  <p className="text-text-muted text-[14px] leading-[1.7] mt-5 mb-6">{pkg.tagline}</p>
+                  <p className="text-text-muted text-[14px] leading-[1.7] mt-5 mb-6">{pkg.description}</p>
 
                   {/* Ideal for */}
                   <div className="mb-6">
@@ -197,21 +163,59 @@ export default function PackagesContent() {
                     </ul>
                   </div>
 
-                  {/* CTA */}
-                  <a
-                    href={`mailto:hi.aditya.dev@gmail.com?subject=${pkg.ctaSubject}`}
-                    className={`block text-center px-5 py-3.5 text-[12px] font-[family-name:var(--font-mono)] uppercase tracking-[0.12em] font-medium border border-border-hard transition-all duration-200 ${
-                      pkg.featured
+                  {/* CTA — button triggers dialog */}
+                  <button
+                    onClick={(e) => handleGetStarted(pkg, e.currentTarget)}
+                    aria-label={`Get Started with the ${pkg.name} package at ${pkg.price}`}
+                    className={`block w-full text-center px-5 py-3.5 text-[12px] font-[family-name:var(--font-mono)] uppercase tracking-[0.12em] font-medium border border-border-hard transition-all duration-200 cursor-pointer ${
+                      pkg.recommended
                         ? 'bg-maroon text-white shadow-hard-sm hover:bg-maroon-dark'
                         : 'bg-white text-text-primary shadow-hard-sm hover:bg-maroon hover:text-white hover:border-maroon'
                     }`}
                   >
                     GET STARTED &rarr;
-                  </a>
+                  </button>
                 </motion.div>
               ))}
             </div>
+
+            {/* Scope exclusion note */}
+            <motion.div variants={fadeUp} className="mt-10 border-t border-border pt-8">
+              <p className="text-text-muted text-[13px] leading-[1.7] max-w-3xl">
+                E-commerce functionality, payment gateways, custom dashboards, authentication, databases, complex web applications, multilingual systems and third-party subscription costs are quoted separately.
+              </p>
+            </motion.div>
           </Reveal>
+        </div>
+      </section>
+
+      {/* ═══ PAYMENT TERMS ═══ */}
+      <section className="border-b border-border-hard bg-bg-surface-2">
+        <div className="max-w-7xl mx-auto px-6 py-16 md:py-20">
+          <div className="max-w-3xl">
+            {/* 50/50 visual indicator — editorial style */}
+            <div className="flex items-center gap-4 mb-6">
+              <span className="font-[family-name:var(--font-mono)] text-3xl font-black text-text-primary">50<span className="text-maroon">/</span>50</span>
+              <div className="h-[2px] flex-1 bg-border-hard" />
+            </div>
+
+            <h2 className="text-2xl md:text-3xl font-black uppercase tracking-[-0.02em] text-text-primary leading-[1.1] mb-5">
+              Simple 50/50 payment structure
+            </h2>
+
+            <p className="text-text-muted text-[15px] leading-[1.7] max-w-2xl">
+              50% upfront confirms your booking and allows work to begin. The remaining 50% is payable after the approved website has been successfully deployed to your chosen hosting provider and domain.
+            </p>
+
+            <div className="mt-5 space-y-3">
+              <p className="text-text-muted text-[13px] leading-[1.6] border-l-2 border-maroon pl-4">
+                Final source-code ownership, administrative access and complete project handover are provided once the remaining payment has cleared.
+              </p>
+              <p className="text-text-muted text-[13px] leading-[1.6] border-l-2 border-border pl-4">
+                Domain registration, hosting subscriptions, paid plugins, premium assets and other third-party services are not included unless they are specifically listed in the agreed project scope.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -300,7 +304,7 @@ export default function PackagesContent() {
                 { q: 'What happens after launch?', a: 'You get the full source code in a GitHub repository, deployment access, and a brief handoff document. For Premium packages, I provide 2 weeks of priority support for any post-launch fixes.' },
                 { q: 'Can I upgrade my package mid-project?', a: 'Yes. If the scope grows, we can adjust the package and timeline. I\'ll always communicate the cost and timeline impact before starting additional work.' },
                 { q: 'Do you offer refunds?', a: 'I don\'t offer refunds after work has started. However, I involve you at every milestone, so there are no surprises. If at any point you\'re not satisfied, we discuss it and adjust direction.' },
-                { q: 'What payment methods do you accept?', a: 'Bank transfer (India), UPI, and PayPal for international clients. I typically work with a 50% upfront and 50% on delivery structure for larger projects.' },
+                { q: 'What payment methods do you accept?', a: 'Bank transfer (India), UPI, and PayPal for international clients. I work with a 50% upfront and 50% on delivery structure.' },
               ].map((item, i) => (
                 <div key={i} className="border-b border-border py-5">
                   <p className="text-[15px] font-medium text-text-primary leading-snug">{item.q}</p>
@@ -330,7 +334,7 @@ export default function PackagesContent() {
               Send the short version of your project. I&apos;ll reply with a clear scope, timeline, and exact price — usually within 24 hours.
             </p>
             <div className="flex flex-wrap gap-4 mt-10">
-              <a href="mailto:hi.aditya.dev@gmail.com?subject=Package Inquiry" className="bg-maroon text-white border border-border-hard px-6 py-3.5 text-[12px] font-[family-name:var(--font-mono)] uppercase tracking-[0.15em] font-medium shadow-hard hover:bg-maroon-light transition-colors duration-200 inline-block">
+              <a href="mailto:hi.aditya.dev@gmail.com?subject=Package%20Inquiry" className="bg-maroon text-white border border-border-hard px-6 py-3.5 text-[12px] font-[family-name:var(--font-mono)] uppercase tracking-[0.15em] font-medium shadow-hard hover:bg-maroon-light transition-colors duration-200 inline-block">
                 EMAIL ME &rarr;
               </a>
               <a href="tel:+919310736542" className="bg-white text-text-primary border border-border-hard px-6 py-3.5 text-[12px] font-[family-name:var(--font-mono)] uppercase tracking-[0.15em] shadow-hard-sm hover:bg-maroon hover:text-white hover:border-maroon transition-all duration-200 inline-block">
@@ -340,6 +344,14 @@ export default function PackagesContent() {
           </motion.div>
         </div>
       </section>
+
+      {/* ═══ ENQUIRY DIALOG ═══ */}
+      <PackageEnquiryDialog
+        isOpen={isEnquiryOpen}
+        onClose={handleCloseEnquiry}
+        pkg={selectedPkg}
+        triggerRef={triggerRef}
+      />
     </>
   );
 }
