@@ -14,7 +14,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "admin:hash-password": "node scripts/hash-admin-password.mjs",
-    "db:check": "tsx scripts/check-database.ts"
+    "db:check": "tsx scripts/check-database.ts",
+    "favicons": "node scripts/generate-favicons.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
@@ -39,9 +40,18 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "jsdom": "^26.1.0",
+    "png-to-ico": "^3.0.2",
+    "sharp": "^0.35.3",
     "tailwindcss": "^4",
     "tsx": "^4.23.1",
     "typescript": "^5",
     "vitest": "^3.2.4"
+  },
+  "allowScripts": {
+    "esbuild@0.18.20": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.1": true,
+    "sharp@0.34.5": true,
+    "unrs-resolver@1.12.2": true
   }
 }

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -15,6 +15,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#7A1F2B",
+};
+
 export const metadata: Metadata = {
   title: {
     default: "Aditya — Front-End Developer & UI/UX Designer",
@@ -23,6 +27,27 @@ export const metadata: Metadata = {
   description:
     "Aditya is a Delhi-based Front-End Developer and UI/UX Designer building high-performance digital interfaces, immersive 3D web experiences, corporate websites, dashboards, and interactive web apps.",
   metadataBase: new URL("https://dev-aditya.com"),
+  manifest: "/manifest.webmanifest",
+  icons: {
+    // SVG is preferred by modern browsers — sharp at any DPI.
+    // favicon.ico is auto-detected by Next.js file-based metadata
+    // convention (src/app/favicon.ico) and emitted with a
+    // fingerprinted URL — we do not duplicate it here.
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    // Apple touch icon — iOS home-screen bookmark. Next.js file-based
+    // convention expects `apple-icon.png`, but the brief requires the
+    // standard `apple-touch-icon.png` filename, so we reference it
+    // explicitly here.
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   openGraph: {
     title: "Aditya — Front-End Developer & UI/UX Designer",
     description:
