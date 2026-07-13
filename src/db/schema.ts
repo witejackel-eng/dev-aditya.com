@@ -53,7 +53,7 @@ export const audits = pgTable(
     mobile_readiness_score: integer('mobile_readiness_score'),
     conversion_readiness_score: integer('conversion_readiness_score'),
 
-    /** Bit-flag coverage: which analysis steps completed successfully. */
+    /** Coverage count: how many of the 6 analysis modules completed (0–6). */
     coverage: integer('coverage'),
 
     /** Full report payload – only populated on completed / partial. */
@@ -80,6 +80,7 @@ export const audits = pgTable(
     index('idx_audits_hostname').on(table.hostname),
     index('idx_audits_status').on(table.status),
     index('idx_audits_created_at').on(table.created_at),
+    index('idx_audits_cache_lookup').on(table.normalized_url, table.scanner_version, table.status, table.completed_at),
   ],
 );
 
@@ -167,6 +168,24 @@ export const audit_events = pgTable(
   (table) => [
     index('idx_audit_events_audit_id').on(table.audit_id),
     index('idx_audit_events_event_type').on(table.event_type),
+  ],
+);
+
+// ──────────────────────────────────────────────────────────────
+// rate_limits
+// ──────────────────────────────────────────────────────────────
+
+export const rateLimits = pgTable(
+  'rate_limits',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    key: text('key').notNull(),
+    created_at: timestamp('created_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index('idx_rate_limits_key_created').on(table.key, table.created_at),
   ],
 );
 

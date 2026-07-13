@@ -3,15 +3,13 @@
  *
  * Record funnel events for analytics.
  *
- * Supported events:
- *  - public_report_viewed
- *  - unlock_form_viewed
- *  - full_report_viewed
- *  - consultation_cta_clicked
- *  - email_cta_clicked
- *
- * Validates event type against EVENT_TYPES.
- * Does NOT store unnecessary personal info in metadata.
+ * Security measures:
+ *  - Whitelist of client event types only
+ *  - Rate limiting per audit
+ *  - Validate audit exists
+ *  - Strip PII from metadata
+ *  - Body size limit
+ *  - Same-origin validation
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -21,26 +19,18 @@ import crypto from 'node:crypto';
 import { db } from '@/db';
 import { auditEvents, audits } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { readBodyWithLimit } from '@/lib/request-security';
+import { readBodyWithLimit, validateSameOrigin, getClientIp } from '@/lib/request-security';
+import { checkRateLimit, hashIpForRateLimit } from '@/lib/rate-limit';
+import { CLIENT_EVENT_TYPES } from '@/lib/audit/event-types';
 
-// ──────────────────────────────────────────────────────────────
-// Allowed client-side event types
-// ──────────────────────────────────────────────────────────────
-
-const CLIENT_EVENT_TYPES = [
-  'public_report_viewed',
-  'unlock_form_viewed',
-  'full_report_viewed',
-  'consultation_cta_clicked',
-  'email_cta_clicked',
-] as const;
+export const runtime = 'nodejs';
 
 // ──────────────────────────────────────────────────────────────
 // Zod schema
 // ──────────────────────────────────────────────────────────────
 
 const eventSchema = z.object({
-  eventType: z.string().refine((val) => CLIENT_EVENT_TYPES.includes(val as any), {
+  eventType: z.enum(CLIENT_EVENT_TYPES as unknown as [string, ...string[]], {
     message: 'Invalid event type.',
   }),
   metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])).optional(),
@@ -64,6 +54,14 @@ export async function POST(
       );
     }
 
+    // ── Same-origin validation ──
+    if (!validateSameOrigin(request)) {
+      return NextResponse.json(
+        { error: 'Request origin could not be verified.' },
+        { status: 403 },
+      );
+    }
+
     // ── Verify audit exists ──
     const auditRows = await db
       .select({ id: audits.id })
@@ -75,6 +73,22 @@ export async function POST(
       return NextResponse.json(
         { error: 'Audit not found.' },
         { status: 404 },
+      );
+    }
+
+    // ── Rate limit events per audit ──
+    const clientIp = getClientIp(request);
+    const ipHash = hashIpForRateLimit(clientIp);
+    const rateLimitResult = await checkRateLimit(
+      `events:${auditId}:${ipHash}`,
+      20, // 20 events per minute per audit per IP
+      60 * 1_000, // 1 minute
+    );
+
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        { error: 'Too many event requests.' },
+        { status: 429 },
       );
     }
 
@@ -114,7 +128,6 @@ export async function POST(
     // ── Sanitize metadata — strip any PII ──
     const sanitizedMetadata: Record<string, unknown> = {};
     if (body.metadata) {
-      // Only keep safe, non-personal keys
       const allowedKeys = ['section', 'source', 'action', 'ctaText', 'position', 'variant'];
       for (const key of allowedKeys) {
         if (key in body.metadata) {

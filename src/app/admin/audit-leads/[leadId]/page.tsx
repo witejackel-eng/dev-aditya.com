@@ -27,7 +27,7 @@ interface LeadDetail {
   lastContactedAt: string;
   auditId: string;
   topFindings: { title: string; severity: string; category: string }[];
-  timeline: { eventType: string; createdAt: string; metadata: any }[];
+  timeline: { eventType: string; createdAt: string; metadata: Record<string, unknown> }[];
 }
 
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
@@ -57,49 +57,86 @@ export default function LeadDetailPage({ params }: { params: Promise<{ leadId: s
     try {
       const res = await fetch(`/api/admin/audit-leads/${leadId}`);
       if (res.status === 401) { setAuthed(false); return; }
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error('[admin:lead] Fetch failed:', data.error || res.status);
+        return;
+      }
       const data = await res.json();
       setLead(data);
-    } catch { /* ignore */ } finally { setLoading(false); }
+    } catch {
+      // Silently handle fetch errors
+    } finally { setLoading(false); }
   }, [leadId]);
 
-  useEffect(() => { fetchLead(); }, [fetchLead]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchLead(); }, [leadId]);
 
   const updateStatus = async (newStatus: string) => {
     setUpdating(true);
     try {
-      await fetch(`/api/admin/audit-leads/${leadId}`, {
+      const res = await fetch(`/api/admin/audit-leads/${leadId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Failed to update status.');
+      }
       fetchLead();
-    } catch { /* ignore */ } finally { setUpdating(false); }
+    } catch {
+      alert('Network error. Please try again.');
+    } finally { setUpdating(false); }
   };
 
   const addNote = async () => {
     if (!note.trim()) return;
     setUpdating(true);
     try {
-      await fetch(`/api/admin/audit-leads/${leadId}`, {
+      const newNotes = ((lead?.notes || '') + '\n' + note).trim();
+      if (newNotes.length > 5000) {
+        alert('Notes are too long. Maximum 5000 characters.');
+        setUpdating(false);
+        return;
+      }
+      const res = await fetch(`/api/admin/audit-leads/${leadId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes: ((lead?.notes || '') + '\n' + note).trim() }),
+        body: JSON.stringify({ notes: newNotes }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Failed to add note.');
+      }
       setNote('');
       fetchLead();
-    } catch { /* ignore */ } finally { setUpdating(false); }
+    } catch {
+      alert('Network error. Please try again.');
+    } finally { setUpdating(false); }
   };
 
   const resendEmail = async () => {
     try {
-      await fetch(`/api/admin/audit-leads/${leadId}/resend`, { method: 'POST' });
+      const res = await fetch(`/api/admin/audit-leads/${leadId}/resend`, { method: 'POST' });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.error || 'Failed to resend email.');
+      } else {
+        alert('Email resent successfully.');
+      }
       fetchLead();
-    } catch { /* ignore */ }
+    } catch {
+      alert('Network error. Please try again.');
+    }
   };
 
   if (!authed) {
-    if (typeof window !== 'undefined') window.location.href = '/admin/login';
-    return null;
+    return (
+      <div className="pt-[100px] min-h-screen bg-bg-primary flex items-center justify-center">
+        <p className="text-text-muted font-[family-name:var(--font-mono)] text-sm">Redirecting to login...</p>
+      </div>
+    );
   }
 
   if (loading || !lead) {
@@ -189,7 +226,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ leadId: s
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-text-muted mt-3">Coverage: {lead.coverage} of 5 checks completed</p>
+              <p className="text-xs text-text-muted mt-3">Coverage: {lead.coverage} of 6 checks completed</p>
             </div>
 
             {/* Top Findings */}

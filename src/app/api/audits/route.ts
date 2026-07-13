@@ -23,6 +23,7 @@ import { audits, auditEvents } from '@/db/schema';
 import { SCANNER_VERSION, CACHE_DURATION_HOURS } from '@/lib/audit/constants';
 import { validateAuditUrl } from '@/lib/audit/url-validator';
 import { checkRateLimit, hashIpForRateLimit } from '@/lib/rate-limit';
+import { env } from '@/lib/env';
 import {
   validateSameOrigin,
   verifyTurnstile,
@@ -31,6 +32,8 @@ import {
   getClientIp,
 } from '@/lib/request-security';
 import { eq, and, desc } from 'drizzle-orm';
+
+export const runtime = 'nodejs';
 
 // ──────────────────────────────────────────────────────────────
 // Zod schema
@@ -107,12 +110,33 @@ export async function POST(request: NextRequest) {
     const body = parsed.data;
 
     // ── Step 2b: Verify Turnstile ──
+    const turnstileSecret = env.TURNSTILE_SECRET_KEY;
+    const isDev = process.env.NODE_ENV !== 'production';
+    const isTestSiteKey = env.NEXT_PUBLIC_TURNSTILE_SITE_KEY === '1x00000000000000000000AA';
+
+    if (!turnstileSecret && !isDev && !isTestSiteKey) {
+      // In production without Turnstile secret, return 503
+      return NextResponse.json(
+        { error: 'Security verification is not available. Please try again later.' },
+        { status: 503 },
+      );
+    }
+
+    if (!body.turnstileToken && !isDev && !isTestSiteKey) {
+      // In production, missing token must fail
+      return NextResponse.json(
+        { error: 'Security verification is required. Please complete the CAPTCHA.' },
+        { status: 403 },
+      );
+    }
+
     if (body.turnstileToken) {
+      // BACKEND decides the expected action, NOT the client
       const turnstileResult = await verifyTurnstile(body.turnstileToken, 'audit_create');
       if (!turnstileResult.success) {
         return NextResponse.json(
           { error: 'Security verification failed. Please try again.' },
-          { status: 400 },
+          { status: 403 },
         );
       }
     }
@@ -150,7 +174,7 @@ export async function POST(request: NextRequest) {
 
     const { normalizedUrl, hostname } = urlValidation;
 
-    // ── Step 4: Check for recent cached result ──
+    // ── Step 4: Check for recent cached result (full normalized_url + scanner_version) ──
     const cacheCutoff = new Date(Date.now() - CACHE_DURATION_HOURS * 60 * 60 * 1_000);
 
     let cachedAudit: typeof audits.$inferSelect | null = null;
@@ -160,7 +184,8 @@ export async function POST(request: NextRequest) {
         .from(audits)
         .where(
           and(
-            eq(audits.hostname, hostname),
+            eq(audits.normalized_url, normalizedUrl),
+            eq(audits.scanner_version, SCANNER_VERSION),
             eq(audits.status, 'completed'),
           ),
         )
@@ -240,7 +265,7 @@ export async function POST(request: NextRequest) {
       await db.insert(auditEvents).values({
         id: crypto.randomUUID(),
         audit_id: auditId,
-        event_type: 'audit.created',
+        event_type: 'audit_created',
         metadata: {
           cacheHit: !!cachedAudit,
           hostname,

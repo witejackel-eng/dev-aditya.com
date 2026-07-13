@@ -20,6 +20,7 @@ const specRows = [
   { label: 'SEO FOUNDATION', value: 'PAGE STRUCTURE' },
   { label: 'ACCESSIBILITY', value: 'AUTOMATED CHECKS' },
   { label: 'SECURITY', value: 'PUBLIC HEADERS' },
+  { label: 'TECHNOLOGY', value: 'STACK DETECTION' },
   { label: 'CONVERSION', value: 'HEURISTIC REVIEW' },
 ];
 
@@ -30,27 +31,22 @@ function AuditPageContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = useCallback(async (url: string) => {
+  const handleSubmit = useCallback(async (url: string, turnstileToken: string | null, honeypotValue: string) => {
     setIsSubmitting(true);
     setError(null);
     try {
       const res = await fetch('/api/audits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url, turnstileToken, website_confirm: honeypotValue }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || 'Something went wrong. Please try again.');
         return;
       }
-      // Start the audit run
-      const runRes = await fetch(`/api/audits/${data.auditId}/run`, { method: 'POST' });
-      if (!runRes.ok) {
-        const runData = await runRes.json();
-        setError(runData.error || 'Could not start the audit. Please try again.');
-        return;
-      }
+      // Immediately navigate to the report page.
+      // Do NOT wait for the scan to complete; do NOT call /run here.
       router.push(`/audit/${data.auditId}`);
     } catch (err) {
       setError('Could not connect. Please check your connection and try again.');

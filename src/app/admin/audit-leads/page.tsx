@@ -35,23 +35,35 @@ export default function AdminAuditLeadsPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [error, setError] = useState<string | null>(null);
   const perPage = 20;
 
   const fetchData = useCallback(async () => {
     try {
-      const params = new URLSearchParams({ page: String(page), perPage: String(perPage) });
+      const params = new URLSearchParams({ page: String(page), limit: String(perPage) });
       if (search) params.set('search', search);
       if (statusFilter) params.set('status', statusFilter);
       const res = await fetch(`/api/admin/audit-leads?${params}`);
-      if (res.status === 401) { setAuthed(false); return; }
+      if (!res.ok) {
+        if (res.status === 401) { setAuthed(false); return; }
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || 'Failed to load leads.');
+        return;
+      }
       const data = await res.json();
       setLeads(data.leads || []);
-      setSummary(data.summary || null);
-      setTotalPages(data.totalPages || 1);
-    } catch { /* ignore */ } finally { setLoading(false); }
+      setSummary(data.stats || null);
+      setTotalPages(data.pagination?.totalPages || 1);
+      setError(null);
+    } catch {
+      // Silently handle fetch errors
+    } finally {
+      setLoading(false);
+    }
   }, [page, search, statusFilter]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { fetchData(); }, [page, search, statusFilter]);
 
   if (!authed) {
     if (typeof window !== 'undefined') window.location.href = '/admin/login';
@@ -99,6 +111,13 @@ export default function AdminAuditLeadsPage() {
             </form>
           </div>
         </div>
+
+        {/* Error */}
+        {error && (
+          <div role="alert" className="mb-6 bg-bg-surface border border-border-hard p-4 text-sm text-maroon">
+            {error}
+          </div>
+        )}
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">

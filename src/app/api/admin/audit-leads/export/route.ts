@@ -15,7 +15,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { auditLeads, audits } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/admin/require-admin';
 import type { AuditFinding, AuditReportData } from '@/lib/audit/types';
+
+export const runtime = 'nodejs';
 
 // ──────────────────────────────────────────────────────────────
 // Route handler
@@ -23,6 +26,10 @@ import type { AuditFinding, AuditReportData } from '@/lib/audit/types';
 
 export async function GET(request: NextRequest) {
   try {
+    // ── Admin authentication ──
+    const authResult = await requireAdmin();
+    if (authResult !== true) return authResult;
+
     const { searchParams } = request.nextUrl;
 
     // Optional filters

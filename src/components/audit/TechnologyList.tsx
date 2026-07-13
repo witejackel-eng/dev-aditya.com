@@ -2,9 +2,12 @@
 
 import { motion } from 'framer-motion';
 import type { TechnologyDetection, TechnologyCategory } from '@/lib/audit/types';
+import type { PublicTechnologyDetection } from '@/lib/audit/dto';
+
+type TechItem = TechnologyDetection | PublicTechnologyDetection;
 
 interface TechnologyListProps {
-  technologies: TechnologyDetection[];
+  technologies: TechItem[];
 }
 
 function getConfidenceBadge(confidence: number): { label: string; className: string } {
@@ -17,30 +20,19 @@ function getConfidenceBadge(confidence: number): { label: string; className: str
   return { label: 'POSSIBLE', className: 'bg-bg-surface-2 text-text-muted' };
 }
 
-function getCategoryLabel(category: TechnologyCategory): string {
+function getCategoryLabel(category: string): string {
   switch (category) {
-    case 'cms':
-      return 'CMS';
-    case 'framework':
-      return 'FRAMEWORK';
-    case 'hosting':
-      return 'HOSTING';
-    case 'cdn':
-      return 'CDN';
-    case 'analytics':
-      return 'ANALYTICS';
-    case 'advertising':
-      return 'ADVERTISING';
-    case 'marketing':
-      return 'MARKETING';
-    case 'security':
-      return 'SECURITY';
-    case 'ecommerce':
-      return 'E-COMMERCE';
-    case 'builder':
-      return 'BUILDER';
-    default:
-      return 'OTHER';
+    case 'cms': return 'CMS';
+    case 'framework': return 'FRAMEWORK';
+    case 'hosting': return 'HOSTING';
+    case 'cdn': return 'CDN';
+    case 'analytics': return 'ANALYTICS';
+    case 'advertising': return 'ADVERTISING';
+    case 'marketing': return 'MARKETING';
+    case 'security': return 'SECURITY';
+    case 'ecommerce': return 'E-COMMERCE';
+    case 'builder': return 'BUILDER';
+    default: return 'OTHER';
   }
 }
 
@@ -68,14 +60,13 @@ export default function TechnologyList({ technologies }: TechnologyListProps) {
   }
 
   // Group by category
-  const grouped = technologies.reduce<Record<string, TechnologyDetection[]>>((acc, tech) => {
+  const grouped = technologies.reduce<Record<string, TechItem[]>>((acc, tech) => {
     const key = tech.category;
     if (!acc[key]) acc[key] = [];
     acc[key].push(tech);
     return acc;
   }, {});
 
-  // Sort categories alphabetically
   const sortedCategories = Object.keys(grouped).sort();
 
   return (
@@ -101,7 +92,7 @@ export default function TechnologyList({ technologies }: TechnologyListProps) {
               className="px-5 py-4"
             >
               <span className="text-[10px] font-[family-name:var(--font-mono)] uppercase tracking-widest text-text-muted mb-2 block">
-                {getCategoryLabel(category as TechnologyCategory)}
+                {getCategoryLabel(category)}
               </span>
 
               <div className="space-y-2">

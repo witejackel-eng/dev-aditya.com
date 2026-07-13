@@ -4,7 +4,8 @@
  * Fetch an audit and return either a PublicAuditDto (no access)
  * or a FullAuditDto (access granted via cookie, query token, or admin session).
  *
- * The public DTO PHYSICALLY OMITS locked data — not just hidden.
+ * Uses proper DTOs. No _public property. Sets isUnlocked explicitly.
+ * Cache-Control: private, no-store with Vary: Cookie.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -14,7 +15,10 @@ import { audits } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { verifyReportAccessCookie, REPORT_ACCESS_COOKIE_PREFIX, verifyAccessToken } from '@/lib/audit/report-access';
 import { verifySession, ADMIN_COOKIE_NAME } from '@/lib/admin/session';
-import type { AuditFinding, PublicAuditDto, FullAuditDto } from '@/lib/audit/types';
+import type { AuditFinding, TechnologyDetection } from '@/lib/audit/types';
+import type { PublicAuditDto, FullAuditDto, AuditCoverageDto, PublicPageSpeedSummary, PublicTechnologyDetection, PublicPageSpeedMetric } from '@/lib/audit/dto';
+
+export const runtime = 'nodejs';
 
 export async function GET(
   request: NextRequest,
@@ -57,23 +61,37 @@ export async function GET(
     // ── Determine report access ──
     const hasAccess = checkReportAccess(request, auditId);
 
-    // ── Build base DTO fields ──
+    // ── Build base fields ──
     const reportData = audit.report_data as Record<string, unknown> | null;
     const allFindings = (reportData?.findings as AuditFinding[] | undefined) ?? [];
     const freeFindingCount = (reportData?.freeFindingCount as number) ?? 3;
 
-    // ── Compute positive findings for public view ──
     const positiveFindings: AuditFinding[] = allFindings.filter(
       (f) => f.severity === 'positive',
     );
 
+    // Build coverage DTO
+    const coverage = buildCoverageDto(reportData, audit.coverage ?? 0);
+
+    // Build pageSpeedSummary
+    const pageSpeedSummary = buildPageSpeedSummary(reportData);
+
+    // Build limitations
+    const limitations = buildLimitations(coverage);
+
     if (hasAccess) {
-      // ── FullAuditDto: return complete report ──
+      // ── FullAuditDto ──
       const fullDto: FullAuditDto = {
         id: audit.id,
         hostname: audit.hostname,
         normalizedUrl: audit.normalized_url,
         status: audit.status as FullAuditDto['status'],
+        createdAt: audit.created_at?.toISOString() ?? new Date().toISOString(),
+        completedAt: audit.completed_at?.toISOString() ?? null,
+        safeErrorMessage: audit.safe_error_message,
+        cacheHit: audit.cache_hit,
+        coverage,
+        isUnlocked: true,
         overallScore: audit.overall_score,
         performanceScore: audit.performance_score,
         seoScore: audit.seo_score,
@@ -81,47 +99,52 @@ export async function GET(
         bestPracticesSecurityScore: audit.best_practices_security_score,
         mobileReadinessScore: audit.mobile_readiness_score,
         conversionReadinessScore: audit.conversion_readiness_score,
-        findings: allFindings,
-        freeFindingCount,
+        publicFindings: allFindings.filter(f => f.severity !== 'positive').slice(0, freeFindingCount + 3),
+        positiveFindings,
+        technologies: (reportData?.technologies as TechnologyDetection[] | undefined) ?? [],
+        pageSpeedSummary,
         totalFindingCount: allFindings.length,
-        safeErrorMessage: audit.safe_error_message,
-        createdAt: audit.created_at?.toISOString() ?? new Date().toISOString(),
-        completedAt: audit.completed_at?.toISOString() ?? null,
+        freeFindingCount,
+        limitations,
         reportData: reportData as unknown as FullAuditDto['reportData'],
-        cacheHit: audit.cache_hit,
-        expiresAt: audit.expires_at?.toISOString() ?? null,
       };
 
       return NextResponse.json(fullDto, {
         headers: {
           'X-Content-Type-Options': 'nosniff',
           'Cache-Control': 'private, no-store',
+          'Vary': 'Cookie',
         },
       });
     }
 
     // ── PublicAuditDto: PHYSICALLY OMIT locked data ──
-    // We only expose limited findings, NOT the full report data
 
-    // Top 3 non-positive findings (most severe issues)
+    // Top non-positive findings (preview only)
     const nonPositiveFindings = allFindings
       .filter((f) => f.severity !== 'positive')
-      .slice(0, 3);
+      .slice(0, freeFindingCount);
 
     // 3 positive findings
     const publicPositiveFindings = positiveFindings.slice(0, 3);
 
-    // High-confidence technologies only (confidence >= 0.8)
-    const technologies = (reportData?.technologies as Array<{ name: string; category: string; confidence: number; evidence: string }> | undefined) ?? [];
-    const highConfidenceTech = technologies
+    // High-confidence technologies only — no evidence
+    const technologies = (reportData?.technologies as TechnologyDetection[] | undefined) ?? [];
+    const publicTechnologies: PublicTechnologyDetection[] = technologies
       .filter((t) => t.confidence >= 0.8)
-      .map((t) => ({ name: t.name, category: t.category }));
+      .map((t) => ({ name: t.name, category: t.category, confidence: t.confidence }));
 
     const publicDto: PublicAuditDto = {
       id: audit.id,
       hostname: audit.hostname,
       normalizedUrl: audit.normalized_url,
       status: audit.status as PublicAuditDto['status'],
+      createdAt: audit.created_at?.toISOString() ?? new Date().toISOString(),
+      completedAt: audit.completed_at?.toISOString() ?? null,
+      safeErrorMessage: audit.safe_error_message,
+      cacheHit: audit.cache_hit,
+      coverage,
+      isUnlocked: false,
       overallScore: audit.overall_score,
       performanceScore: audit.performance_score,
       seoScore: audit.seo_score,
@@ -129,29 +152,20 @@ export async function GET(
       bestPracticesSecurityScore: audit.best_practices_security_score,
       mobileReadinessScore: audit.mobile_readiness_score,
       conversionReadinessScore: audit.conversion_readiness_score,
-      findings: [...nonPositiveFindings, ...publicPositiveFindings].slice(0, freeFindingCount + 3),
-      freeFindingCount,
+      publicFindings: nonPositiveFindings,
+      positiveFindings: publicPositiveFindings,
+      technologies: publicTechnologies,
+      pageSpeedSummary,
       totalFindingCount: allFindings.length,
-      safeErrorMessage: audit.safe_error_message,
-      createdAt: audit.created_at?.toISOString() ?? new Date().toISOString(),
-      completedAt: audit.completed_at?.toISOString() ?? null,
-      // Additional public-only fields
-      ...(getCoverageLimitations(audit.coverage) ? {} : {}),
-    };
-
-    // Attach extra public data not in the DTO type
-    (publicDto as unknown as Record<string, unknown>)._public = {
-      topIssues: nonPositiveFindings,
-      positives: publicPositiveFindings,
-      highConfidenceTech,
-      coverage: audit.coverage,
-      limitations: getCoverageLimitations(audit.coverage),
+      freeFindingCount,
+      limitations,
     };
 
     return NextResponse.json(publicDto, {
       headers: {
         'X-Content-Type-Options': 'nosniff',
-        'Cache-Control': 'public, max-age=60',
+        'Cache-Control': 'private, no-store',
+        'Vary': 'Cookie',
       },
     });
   } catch (err) {
@@ -194,19 +208,83 @@ function checkReportAccess(request: NextRequest, auditId: string): boolean {
 }
 
 // ──────────────────────────────────────────────────────────────
-// Coverage limitations description
+// Coverage DTO builder
 // ──────────────────────────────────────────────────────────────
 
-function getCoverageLimitations(coverage: number | null): string[] {
-  const limitations: string[] = [];
-  const c = coverage ?? 0;
+function buildCoverageDto(reportData: Record<string, unknown> | null, storedCoverage: number): AuditCoverageDto {
+  const pageSpeed = reportData?.pageSpeed as Record<string, unknown> | null;
+  const htmlAnalysis = reportData?.htmlAnalysis;
+  const seoAnalysis = reportData?.seoAnalysis;
+  const securityAnalysis = reportData?.securityAnalysis;
+  const technologies = reportData?.technologies as unknown[] | null;
+  const conversionAnalysis = reportData?.conversionAnalysis;
 
-  if (c < 1) limitations.push('No performance data available.');
-  if (c < 2) limitations.push('HTML content analysis was not completed.');
-  if (c < 3) limitations.push('SEO analysis was not completed.');
-  if (c < 4) limitations.push('Security analysis was not completed.');
-  if (c < 5) limitations.push('Technology detection was not completed.');
-  if (c < 6) limitations.push('Conversion analysis was not completed.');
+  const performance = !!(pageSpeed?.mobile || pageSpeed?.desktop);
+  const html = !!htmlAnalysis;
+  const seo = !!seoAnalysis;
+  const security = !!securityAnalysis;
+  // Technology counts as completed only if the detector actually ran,
+  // NOT just because the array exists (it could be empty).
+  // We check if it's an array (detector ran) rather than null/undefined.
+  const technology = Array.isArray(technologies);
+  const conversion = !!conversionAnalysis;
+
+  const modules = { performance, html, seo, security, technology, conversion };
+  const completed = Object.values(modules).filter(Boolean).length;
+
+  return { completed, total: 6, modules };
+}
+
+// ──────────────────────────────────────────────────────────────
+// PageSpeed summary builder
+// ──────────────────────────────────────────────────────────────
+
+function buildPageSpeedSummary(reportData: Record<string, unknown> | null): PublicPageSpeedSummary | null {
+  const pageSpeed = reportData?.pageSpeed as Record<string, unknown> | null;
+  if (!pageSpeed) return null;
+
+  function extractMetrics(strategy: Record<string, unknown> | null): PublicPageSpeedMetric | null {
+    if (!strategy) return null;
+
+    const metrics = strategy.metrics as Record<string, Record<string, unknown>> | null;
+    const categories = strategy.categories as Record<string, Record<string, unknown>> | null;
+
+    const perfCategory = categories?.performance;
+    const performanceScore = typeof perfCategory?.score === 'number' ? Math.round(perfCategory.score * 100) : null;
+
+    return {
+      performanceScore,
+      lcp: typeof metrics?.largestContentfulPaint?.numericValue === 'number' ? metrics.largestContentfulPaint.numericValue : null,
+      fcp: typeof metrics?.firstContentfulPaint?.numericValue === 'number' ? metrics.firstContentfulPaint.numericValue : null,
+      cls: typeof metrics?.cumulativeLayoutShift?.numericValue === 'number' ? metrics.cumulativeLayoutShift.numericValue : null,
+      tbt: typeof metrics?.totalBlockingTime?.numericValue === 'number' ? metrics.totalBlockingTime.numericValue : null,
+      si: typeof metrics?.speedIndex?.numericValue === 'number' ? metrics.speedIndex.numericValue : null,
+      inp: typeof metrics?.interactionToNextPaint?.numericValue === 'number' ? metrics.interactionToNextPaint.numericValue : null,
+    };
+  }
+
+  const mobile = extractMetrics(pageSpeed.mobile as Record<string, unknown> | null);
+  const desktop = extractMetrics(pageSpeed.desktop as Record<string, unknown> | null);
+
+  if (!mobile && !desktop) return null;
+
+  return { mobile, desktop };
+}
+
+// ──────────────────────────────────────────────────────────────
+// Limitations builder
+// ──────────────────────────────────────────────────────────────
+
+function buildLimitations(coverage: AuditCoverageDto): string[] {
+  const limitations: string[] = [];
+  const m = coverage.modules;
+
+  if (!m.performance) limitations.push('No performance data available.');
+  if (!m.html) limitations.push('HTML content analysis was not completed.');
+  if (!m.seo) limitations.push('SEO analysis was not completed.');
+  if (!m.security) limitations.push('Security analysis was not completed.');
+  if (!m.technology) limitations.push('Technology detection was not completed.');
+  if (!m.conversion) limitations.push('Conversion analysis was not completed.');
 
   if (limitations.length === 0) {
     limitations.push('All analysis modules completed successfully.');

@@ -13,6 +13,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { auditLeads, audits, auditEvents } from '@/db/schema';
 import { eq, desc, asc, like, and, or, gte, lte, count } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/admin/require-admin';
+
+export const runtime = 'nodejs';
 
 // ──────────────────────────────────────────────────────────────
 // Route handler
@@ -20,6 +23,10 @@ import { eq, desc, asc, like, and, or, gte, lte, count } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
+    // ── Admin authentication ──
+    const authResult = await requireAdmin();
+    if (authResult !== true) return authResult;
+
     const { searchParams } = request.nextUrl;
 
     // ── Parse query parameters ──

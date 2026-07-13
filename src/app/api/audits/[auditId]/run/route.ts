@@ -3,9 +3,9 @@
  *
  * Execute the audit pipeline for a queued audit.
  *
- * - Atomically claim audit in 'queued' status (update to 'validating' only if still queued)
+ * - Atomically claim audit in 'queued' status (update to 'validating' with WHERE status='queued')
  * - Prevent duplicate simultaneous runs
- * - If already completed: return existing result
+ * - If already completed/partial: return ONLY { auditId, status } — never reportData
  * - Run the audit using runAudit() with status update callback
  * - Calculate scores, generate findings, recommendations
  * - Save normalized report data to DB
@@ -19,17 +19,14 @@ import crypto from 'node:crypto';
 
 import { db } from '@/db';
 import { audits, auditEvents } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { SCANNER_VERSION } from '@/lib/audit/constants';
 import { runAudit } from '@/lib/audit/run-audit';
 import { generateFindings } from '@/lib/audit/finding-rules';
 import { generateRecommendations } from '@/lib/audit/recommendations';
 import type { AuditReportData } from '@/lib/audit/types';
 
-// ──────────────────────────────────────────────────────────────
-// Vercel function config
-// ──────────────────────────────────────────────────────────────
-
+export const runtime = 'nodejs';
 export const maxDuration = 60; // 60 seconds
 
 // ──────────────────────────────────────────────────────────────
@@ -41,7 +38,6 @@ function createStatusUpdater(auditId: string) {
     try {
       const updateData: Record<string, unknown> = { status };
 
-      // Set timestamps for specific stages
       if (status === 'validating') {
         updateData.started_at = new Date();
       }
@@ -53,12 +49,12 @@ function createStatusUpdater(auditId: string) {
 
       // Record event
       const eventMap: Record<string, string> = {
-        validating: 'audit.started',
-        fetching: 'audit.url_validated',
-        performance: 'audit.fetch_completed',
-        analyzing: 'audit.pagespeed_completed',
-        scoring: 'audit.analysis_completed',
-        completed: 'audit.completed',
+        validating: 'audit_started',
+        fetching: 'audit_started',
+        performance: 'audit_started',
+        analyzing: 'audit_started',
+        scoring: 'audit_started',
+        completed: 'audit_completed',
       };
 
       const eventType = eventMap[status];
@@ -69,7 +65,7 @@ function createStatusUpdater(auditId: string) {
           event_type: eventType,
           metadata: { status },
           created_at: new Date(),
-        }).catch(() => {}); // Non-critical
+        }).catch(() => {});
       }
     } catch (err) {
       console.error('[audit:run] Failed to update status:', err instanceof Error ? err.message : String(err));
@@ -95,63 +91,57 @@ export async function POST(
       );
     }
 
-    // ── Fetch the audit ──
-    const auditRows = await db
-      .select()
-      .from(audits)
-      .where(eq(audits.id, auditId))
-      .limit(1);
-
-    const audit = auditRows[0];
-
-    if (!audit) {
-      return NextResponse.json(
-        { error: 'Audit not found.' },
-        { status: 404 },
-      );
-    }
-
-    // ── If already completed or partial, return existing result ──
-    if (audit.status === 'completed' || audit.status === 'partial') {
-      const existingReportData = audit.report_data as AuditReportData | null;
-      return NextResponse.json({
-        auditId: audit.id,
-        status: audit.status,
-        overallScore: audit.overall_score,
-        reportData: existingReportData,
-        cacheHit: audit.cache_hit,
-      });
-    }
-
     // ── Atomic claim: only proceed if still 'queued' ──
-    if (audit.status !== 'queued') {
-      // Already in progress — another worker claimed it
-      return NextResponse.json(
-        {
-          auditId: audit.id,
-          status: audit.status,
-          message: 'Audit is already in progress.',
-        },
-        { status: 409 }, // Conflict
-      );
-    }
-
-    // Attempt atomic status update: queued → validating
-    const updateResult = await db
+    const claimResult = await db
       .update(audits)
       .set({
         status: 'validating',
         started_at: new Date(),
         scanner_version: SCANNER_VERSION,
       })
-      .where(eq(audits.id, auditId))
+      .where(and(eq(audits.id, auditId), eq(audits.status, 'queued')))
       .returning();
 
-    if (!updateResult || updateResult.length === 0) {
-      return NextResponse.json(
-        { error: 'Audit could not be claimed. It may already be in progress.' },
-        { status: 409 },
-      );
+    if (!claimResult || claimResult.length === 0) {
+      // No row was updated — fetch current status to determine response
+      const auditRows = await db
+        .select({ status: audits.status })
+        .from(audits)
+        .where(eq(audits.id, auditId))
+        .limit(1);
+
+      const audit = auditRows[0];
+
+      if (!audit) {
+        return NextResponse.json(
+          { error: 'Audit not found.' },
+          { status: 404 },
+        );
+      }
+
+      // Already completed/partial — return status only
+      if (audit.status === 'completed' || audit.status === 'partial') {
+        return NextResponse.json({ auditId, status: audit.status });
+      }
+
+      // Already running — 409 Conflict
+      if (audit.status !== 'queued' && audit.status !== 'failed') {
+        return NextResponse.json(
+          { auditId, status: audit.status, message: 'Audit is already in progress.' },
+          { status: 409 },
+        );
+      }
+
+      // Failed — 422, do NOT restart automatically
+      if (audit.status === 'failed') {
+        return NextResponse.json(
+          { auditId, status: 'failed', message: 'Audit previously failed. Create a new audit to retry.' },
+          { status: 422 },
+        );
+      }
+
+      // Fallback
+      return NextResponse.json({ auditId, status: audit.status });
     }
 
     // ── Run the audit pipeline ──
@@ -163,8 +153,8 @@ export async function POST(
     try {
       reportData = await runAudit(
         auditId,
-        audit.normalized_url,
-        audit.hostname,
+        claimResult[0].normalized_url,
+        claimResult[0].hostname,
         updateStatus,
       );
 
@@ -186,11 +176,9 @@ export async function POST(
         },
       );
 
-      // Add recommendations to report data for storage
       (reportData as unknown as Record<string, unknown>).recommendations = recommendations;
 
       // ── Determine final status ──
-      // Check if any critical modules are missing
       const hasPartialData =
         reportData.pageSpeed.mobile === null && reportData.pageSpeed.desktop === null &&
         reportData.htmlAnalysis === null;
@@ -210,7 +198,6 @@ export async function POST(
       console.error('[audit:run] Audit pipeline failed:', err instanceof Error ? err.message : String(err));
       finalStatus = 'failed';
 
-      // Create a minimal report data for the failed state
       reportData = {
         scannerVersion: SCANNER_VERSION,
         pageSpeed: { mobile: null, desktop: null },
@@ -251,7 +238,7 @@ export async function POST(
         best_practices_security_score: scores.bestPracticesSecurity,
         mobile_readiness_score: scores.mobileReadiness,
         conversion_readiness_score: scores.conversionReadiness,
-        coverage: reportData.findings.length > 0 ? calculateCoverage(reportData) : 0,
+        coverage: calculateCoverage(reportData),
         report_data: reportData as unknown as Record<string, unknown>,
         completed_at: new Date(),
         safe_error_message: safeErrorMessage,
@@ -260,7 +247,7 @@ export async function POST(
       .where(eq(audits.id, auditId));
 
     // ── Record completion event ──
-    const eventType = finalStatus === 'failed' ? 'audit.failed' : 'audit.completed';
+    const eventType = finalStatus === 'failed' ? 'audit_failed' : finalStatus === 'partial' ? 'audit_partial' : 'audit_completed';
     try {
       await db.insert(auditEvents).values({
         id: crypto.randomUUID(),
@@ -277,7 +264,7 @@ export async function POST(
       // Non-critical
     }
 
-    // ── Return result ──
+    // ── Return minimal response — NEVER include reportData ──
     if (finalStatus === 'failed') {
       return NextResponse.json(
         {
@@ -292,8 +279,6 @@ export async function POST(
     return NextResponse.json({
       auditId,
       status: finalStatus,
-      overallScore: scores.overall,
-      reportData,
     }, {
       headers: {
         'X-Content-Type-Options': 'nosniff',
@@ -327,16 +312,25 @@ export async function POST(
 }
 
 // ──────────────────────────────────────────────────────────────
-// Coverage calculation
+// Coverage calculation — count of 6 modules that completed
 // ──────────────────────────────────────────────────────────────
 
 function calculateCoverage(data: AuditReportData): number {
   let coverage = 0;
+  // 1. Performance: at least one PageSpeed result
   if (data.pageSpeed?.mobile != null || data.pageSpeed?.desktop != null) coverage++;
+  // 2. HTML analysis
   if (data.htmlAnalysis != null) coverage++;
+  // 3. SEO analysis
   if (data.seoAnalysis != null) coverage++;
+  // 4. Security analysis
   if (data.securityAnalysis != null) coverage++;
-  if (data.technologies != null && data.technologies.length >= 0) coverage++;
+  // 5. Technology detection: counts as completed only if the detector ran,
+  //    NOT just because the array exists (it could be empty).
+  //    Since we always run detectTechnologies and it returns an array,
+  //    an empty array still means it ran successfully.
+  if (Array.isArray(data.technologies)) coverage++;
+  // 6. Conversion analysis
   if (data.conversionAnalysis != null) coverage++;
   return coverage;
 }

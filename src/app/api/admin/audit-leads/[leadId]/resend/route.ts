@@ -20,7 +20,10 @@ import { checkRateLimit } from '@/lib/rate-limit';
 import { generateAccessToken } from '@/lib/audit/report-access';
 import { sendAuditReportEmail } from '@/lib/email/resend';
 import { env } from '@/lib/env';
+import { requireAdmin } from '@/lib/admin/require-admin';
 import type { AuditFinding, AuditReportData } from '@/lib/audit/types';
+
+export const runtime = 'nodejs';
 
 // ──────────────────────────────────────────────────────────────
 // Route handler
@@ -31,6 +34,10 @@ export async function POST(
   { params }: { params: Promise<{ leadId: string }> },
 ) {
   try {
+    // ── Admin authentication ──
+    const authResult = await requireAdmin();
+    if (authResult !== true) return authResult;
+
     const { leadId } = await params;
 
     if (!leadId || typeof leadId !== 'string') {
@@ -140,7 +147,7 @@ export async function POST(
         id: crypto.randomUUID(),
         audit_id: audit.id,
         lead_id: leadId,
-        event_type: 'admin.resent_email',
+        event_type: 'admin_resent_email',
         metadata: {
           success: emailResult.success,
           previousStatus: lead.email_delivery_status,

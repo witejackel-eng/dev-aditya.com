@@ -21,6 +21,8 @@ import { env } from '@/lib/env';
 import { checkRateLimit, hashIpForRateLimit } from '@/lib/rate-limit';
 import { checkHoneypot, readBodyWithLimit, getClientIp, validateSameOrigin } from '@/lib/request-security';
 
+export const runtime = 'nodejs';
+
 // ──────────────────────────────────────────────────────────────
 // Zod schema
 // ──────────────────────────────────────────────────────────────

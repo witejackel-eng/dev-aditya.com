@@ -15,6 +15,9 @@ import crypto from 'node:crypto';
 import { db } from '@/db';
 import { auditLeads, audits, auditEvents } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/admin/require-admin';
+
+export const runtime = 'nodejs';
 
 // ──────────────────────────────────────────────────────────────
 // Allowed status transitions
@@ -53,6 +56,10 @@ export async function GET(
   { params }: { params: Promise<{ leadId: string }> },
 ) {
   try {
+    // ── Admin authentication ──
+    const authResult = await requireAdmin();
+    if (authResult !== true) return authResult;
+
     const { leadId } = await params;
 
     if (!leadId || typeof leadId !== 'string') {
@@ -172,6 +179,10 @@ export async function PATCH(
   { params }: { params: Promise<{ leadId: string }> },
 ) {
   try {
+    // ── Admin authentication ──
+    const authResult = await requireAdmin();
+    if (authResult !== true) return authResult;
+
     const { leadId } = await params;
 
     if (!leadId || typeof leadId !== 'string') {
@@ -274,7 +285,7 @@ export async function PATCH(
           id: crypto.randomUUID(),
           audit_id: lead.audit_id,
           lead_id: leadId,
-          event_type: 'admin.updated_status',
+          event_type: 'admin_status_changed',
           metadata: {
             from: lead.status,
             to: newStatus,
@@ -292,7 +303,7 @@ export async function PATCH(
           id: crypto.randomUUID(),
           audit_id: lead.audit_id,
           lead_id: leadId,
-          event_type: 'admin.updated_notes',
+          event_type: 'admin_updated_notes',
           metadata: { noteLength: sanitizedNotes?.length ?? 0 },
           created_at: new Date(),
         });

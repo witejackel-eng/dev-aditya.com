@@ -2,9 +2,10 @@
 
 import { useState, useCallback, useRef, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import TurnstileWidget from '@/components/security/TurnstileWidget';
 
 interface AuditUrlFormProps {
-  onNavigateToAudit: (url: string) => void;
+  onNavigateToAudit: (url: string, turnstileToken: string | null, honeypotValue: string) => void;
   initialUrl?: string;
   compact?: boolean;
   isSubmitting?: boolean;
@@ -21,19 +22,30 @@ function isValidUrl(value: string): boolean {
   }
 }
 
-export default function AuditUrlForm({ onNavigateToAudit, initialUrl = '', compact = false, isSubmitting, error: externalError }: AuditUrlFormProps) {
+export default function AuditUrlForm({ onNavigateToAudit, initialUrl = '', compact = false, isSubmitting: externalSubmitting, error: externalError }: AuditUrlFormProps) {
   const [url, setUrl] = useState(initialUrl);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const honeypotRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const submittedRef = useRef(false);
+
+  const isSubmitting = loading || !!externalSubmitting;
 
   const handleSubmit = useCallback((e: FormEvent) => {
     e.preventDefault();
+
+    // Prevent double submission from Enter key + onSubmit
+    if (submittedRef.current) return;
+    submittedRef.current = true;
+    setTimeout(() => { submittedRef.current = false; }, 500);
+
     setError(null);
 
     // Honeypot check
-    if (honeypotRef.current && honeypotRef.current.value) return;
+    const honeypotValue = honeypotRef.current?.value ?? '';
 
     const trimmed = url.trim();
     if (!trimmed) {
@@ -42,6 +54,8 @@ export default function AuditUrlForm({ onNavigateToAudit, initialUrl = '', compa
       return;
     }
 
+    // URL normalization happens server-side as source of truth.
+    // Client just does a basic check for UX.
     const normalized = trimmed.startsWith('http') ? trimmed : `https://${trimmed}`;
     if (!isValidUrl(normalized)) {
       setError('Please enter a valid URL (e.g., https://yourwebsite.com).');
@@ -50,16 +64,20 @@ export default function AuditUrlForm({ onNavigateToAudit, initialUrl = '', compa
     }
 
     setLoading(true);
-    onNavigateToAudit(normalized);
-  }, [url, onNavigateToAudit]);
+    onNavigateToAudit(trimmed, turnstileToken, honeypotValue);
+  }, [url, onNavigateToAudit, turnstileToken]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleSubmit(e);
-    }
-  }, [handleSubmit]);
+  // Reset loading when external submitting goes false
+  const prevExternalRef = useRef(externalSubmitting);
+  if (prevExternalRef.current && !externalSubmitting) {
+    setLoading(false);
+    // Reset Turnstile on failure
+    setTurnstileResetKey(k => k + 1);
+    setTurnstileToken(null);
+  }
+  prevExternalRef.current = externalSubmitting;
 
+  const displayError = error || externalError;
   const errorId = 'audit-url-error';
 
   if (compact) {
@@ -87,11 +105,10 @@ export default function AuditUrlForm({ onNavigateToAudit, initialUrl = '', compa
               type="url"
               value={url}
               onChange={(e) => { setUrl(e.target.value); setError(null); }}
-              onKeyDown={handleKeyDown}
               placeholder="https://yourwebsite.com"
-              disabled={loading}
-              aria-describedby={error ? errorId : undefined}
-              aria-invalid={!!error}
+              disabled={isSubmitting}
+              aria-describedby={displayError ? errorId : undefined}
+              aria-invalid={!!displayError}
               className="w-full bg-bg-surface border border-border-hard px-4 py-3 text-text-primary font-[family-name:var(--font-sans)] text-sm placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-maroon focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
@@ -99,19 +116,25 @@ export default function AuditUrlForm({ onNavigateToAudit, initialUrl = '', compa
           <div className="sm:self-end">
             <button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting}
               className="w-full sm:w-auto bg-maroon text-white border border-border-hard px-6 py-3 text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard-sm hover:bg-maroon-dark hover:shadow-hard-hover transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-hard-sm whitespace-nowrap"
             >
-              {loading ? 'STARTING…' : 'RUN FREE AUDIT →'}
+              {isSubmitting ? 'STARTING…' : 'RUN FREE AUDIT →'}
             </button>
           </div>
         </div>
 
-        {/* Turnstile container */}
-        <div id="turnstile-compact" data-turnstile className="mt-3" />
+        {/* Turnstile */}
+        <div className="mt-3">
+          <TurnstileWidget
+            action="audit_create"
+            onToken={setTurnstileToken}
+            resetKey={turnstileResetKey}
+          />
+        </div>
 
         <AnimatePresence>
-          {error && (
+          {displayError && (
             <motion.p
               id={errorId}
               role="alert"
@@ -121,7 +144,7 @@ export default function AuditUrlForm({ onNavigateToAudit, initialUrl = '', compa
               transition={{ duration: 0.2 }}
               className="mt-2 text-sm text-maroon font-[family-name:var(--font-sans)]"
             >
-              {error}
+              {displayError}
             </motion.p>
           )}
         </AnimatePresence>
@@ -160,29 +183,34 @@ export default function AuditUrlForm({ onNavigateToAudit, initialUrl = '', compa
             type="url"
             value={url}
             onChange={(e) => { setUrl(e.target.value); setError(null); }}
-            onKeyDown={handleKeyDown}
             placeholder="https://yourwebsite.com"
-            disabled={loading}
-            aria-describedby={error ? errorId : undefined}
-            aria-invalid={!!error}
+            disabled={isSubmitting}
+            aria-describedby={displayError ? errorId : undefined}
+            aria-invalid={!!displayError}
             className="w-full bg-bg-surface border border-border-hard px-5 py-4 text-text-primary font-[family-name:var(--font-sans)] text-base placeholder:text-text-muted/60 focus:outline-none focus:ring-2 focus:ring-maroon focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={isSubmitting}
           className="w-full sm:w-auto bg-maroon text-white border border-border-hard px-8 py-4 text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard hover:bg-maroon-dark hover:shadow-hard-hover transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-hard whitespace-nowrap"
         >
-          {loading ? 'STARTING ANALYSIS…' : 'ANALYZE MY WEBSITE →'}
+          {isSubmitting ? 'STARTING ANALYSIS…' : 'ANALYZE MY WEBSITE →'}
         </button>
       </div>
 
-      {/* Turnstile container */}
-      <div id="turnstile-full" data-turnstile className="mt-4" />
+      {/* Turnstile */}
+      <div className="mt-4">
+        <TurnstileWidget
+          action="audit_create"
+          onToken={setTurnstileToken}
+          resetKey={turnstileResetKey}
+        />
+      </div>
 
       <AnimatePresence>
-        {error && (
+        {displayError && (
           <motion.p
             id={errorId}
             role="alert"
@@ -192,7 +220,7 @@ export default function AuditUrlForm({ onNavigateToAudit, initialUrl = '', compa
             transition={{ duration: 0.2 }}
             className="mt-3 text-sm text-maroon font-[family-name:var(--font-sans)]"
           >
-            {error}
+            {displayError}
           </motion.p>
         )}
       </AnimatePresence>

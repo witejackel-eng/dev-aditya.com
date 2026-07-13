@@ -37,6 +37,8 @@ import { sendAuditReportEmail, sendNewLeadEmail } from '@/lib/email/resend';
 import { env } from '@/lib/env';
 import type { AuditFinding, AuditReportData } from '@/lib/audit/types';
 
+export const runtime = 'nodejs';
+
 // ──────────────────────────────────────────────────────────────
 // Zod schema
 // ──────────────────────────────────────────────────────────────
@@ -118,12 +120,31 @@ export async function POST(
     const body = parsed.data;
 
     // ── Verify Turnstile ──
+    const turnstileSecret = env.TURNSTILE_SECRET_KEY;
+    const isDev = process.env.NODE_ENV !== 'production';
+    const isTestSiteKey = env.NEXT_PUBLIC_TURNSTILE_SITE_KEY === '1x00000000000000000000AA';
+
+    if (!turnstileSecret && !isDev && !isTestSiteKey) {
+      return NextResponse.json(
+        { error: 'Security verification is not available. Please try again later.' },
+        { status: 503 },
+      );
+    }
+
+    if (!body.turnstileToken && !isDev && !isTestSiteKey) {
+      return NextResponse.json(
+        { error: 'Security verification is required. Please complete the CAPTCHA.' },
+        { status: 403 },
+      );
+    }
+
     if (body.turnstileToken) {
+      // BACKEND decides the expected action, NOT the client
       const turnstileResult = await verifyTurnstile(body.turnstileToken, 'audit_unlock');
       if (!turnstileResult.success) {
         return NextResponse.json(
           { error: 'Security verification failed. Please try again.' },
-          { status: 400 },
+          { status: 403 },
         );
       }
     }
@@ -314,7 +335,7 @@ export async function POST(
           id: crypto.randomUUID(),
           audit_id: auditId,
           lead_id: currentLeadId,
-          event_type: 'lead.email_failed',
+          event_type: 'report_email_failed',
           metadata: { reason: 'send_failure' },
           created_at: new Date(),
         });
@@ -340,7 +361,7 @@ export async function POST(
           id: crypto.randomUUID(),
           audit_id: auditId,
           lead_id: currentLeadId,
-          event_type: 'lead.email_sent',
+          event_type: 'report_email_sent',
           metadata: { emailDomain: normalizedEmail.split('@')[1] },
           created_at: new Date(),
         });
@@ -355,7 +376,7 @@ export async function POST(
         id: crypto.randomUUID(),
         audit_id: auditId,
         lead_id: currentLeadId,
-        event_type: 'lead.unlocked',
+        event_type: 'lead_unlocked',
         metadata: {
           marketingConsent: body.marketingConsent,
           hasBusinessName: !!body.businessName,
@@ -366,12 +387,14 @@ export async function POST(
       // Non-critical
     }
 
-    // ── Return success ──
+    // ── Return success — do NOT return the signed access token ──
     const response = NextResponse.json(
       {
         success: true,
-        accessToken,
         emailSent: reportEmailResult.success,
+        ...(reportEmailResult.success
+          ? {}
+          : { emailMessage: 'Email delivery could not be confirmed, but you can access the complete report here.' }),
       },
       {
         headers: {

@@ -50,6 +50,9 @@ const envSchema = z.object({
 
   /** When "true", the scanner returns hardcoded fixture data instead of live results. */
   AUDIT_USE_FIXTURES: z.string().default('false'),
+
+  /** Comma-separated list of additional allowed origins for same-origin checks. */
+  AUDIT_ALLOWED_ORIGINS: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -90,7 +93,17 @@ if (typeof window === 'undefined' && process.env.NODE_ENV !== 'production') {
 
 /** Convenience booleans derived from env. */
 export const isAuditEnabled = env.AUDIT_FEATURE_ENABLED === 'true';
-export const isFixturesMode = env.AUDIT_USE_FIXTURES === 'true';
+export const isFixturesMode = (() => {
+  // Guard: fixtures mode must never activate in production
+  if (process.env.NODE_ENV === 'production' && env.AUDIT_USE_FIXTURES === 'true') {
+    console.error(
+      '[env] CRITICAL: AUDIT_USE_FIXTURES is "true" in production. ' +
+      'Fixtures mode is disabled for safety. Remove AUDIT_USE_FIXTURES or set it to "false".',
+    );
+    return false;
+  }
+  return env.AUDIT_USE_FIXTURES === 'true';
+})();
 export const hasPageSpeedKey = typeof env.GOOGLE_PAGESPEED_API_KEY === 'string' && env.GOOGLE_PAGESPEED_API_KEY.length > 0;
 export const hasResendKey = typeof env.RESEND_API_KEY === 'string' && env.RESEND_API_KEY.length > 0;
 export const hasTurnstile = typeof env.NEXT_PUBLIC_TURNSTILE_SITE_KEY === 'string' && env.NEXT_PUBLIC_TURNSTILE_SITE_KEY.length > 0;

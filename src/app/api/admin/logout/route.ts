@@ -7,6 +7,8 @@
 import { NextResponse } from 'next/server';
 import { ADMIN_COOKIE_NAME } from '@/lib/admin/session';
 
+export const runtime = 'nodejs';
+
 export async function POST() {
   try {
     const response = NextResponse.json(
@@ -23,7 +25,7 @@ export async function POST() {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      path: '/admin',
+      path: '/',
       maxAge: 0, // Immediately expire
     });
 

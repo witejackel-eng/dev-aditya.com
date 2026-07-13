@@ -2,10 +2,11 @@
 
 import { useState, useCallback, useRef, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import TurnstileWidget from '@/components/security/TurnstileWidget';
 
 interface LeadUnlockFormProps {
   auditId: string;
-  onSuccess: (data: unknown) => void;
+  onSuccess: (data: { success: boolean; emailSent: boolean; emailMessage?: string }) => void;
 }
 
 export default function LeadUnlockForm({ auditId, onSuccess }: LeadUnlockFormProps) {
@@ -16,6 +17,10 @@ export default function LeadUnlockForm({ auditId, onSuccess }: LeadUnlockFormPro
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailMessage, setEmailMessage] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const honeypotRef = useRef<HTMLInputElement>(null);
   const liveRegionRef = useRef<HTMLDivElement>(null);
 
@@ -39,6 +44,8 @@ export default function LeadUnlockForm({ auditId, onSuccess }: LeadUnlockFormPro
     setLoading(true);
 
     try {
+      const honeypotValue = honeypotRef.current?.value ?? '';
+
       const res = await fetch(`/api/audits/${auditId}/unlock`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -48,7 +55,8 @@ export default function LeadUnlockForm({ auditId, onSuccess }: LeadUnlockFormPro
           email: email.trim(),
           businessName: businessName.trim() || null,
           marketingConsent,
-          turnstileToken: null,
+          turnstileToken,
+          website_confirm: honeypotValue,
         }),
       });
 
@@ -56,17 +64,24 @@ export default function LeadUnlockForm({ auditId, onSuccess }: LeadUnlockFormPro
         const data = await res.json().catch(() => ({}));
         setError(data.error || 'Something went wrong. Please try again.');
         setLoading(false);
+        // Reset Turnstile on failure
+        setTurnstileResetKey(k => k + 1);
+        setTurnstileToken(null);
         return;
       }
 
       const data = await res.json();
       setSuccess(true);
+      setEmailSent(data.emailSent !== false);
+      setEmailMessage(data.emailMessage ?? null);
       onSuccess(data);
     } catch {
       setError('Network error. Please check your connection and try again.');
       setLoading(false);
+      setTurnstileResetKey(k => k + 1);
+      setTurnstileToken(null);
     }
-  }, [auditId, firstName, email, businessName, marketingConsent, onSuccess]);
+  }, [auditId, firstName, email, businessName, marketingConsent, turnstileToken, onSuccess]);
 
   const firstNameErrorId = 'unlock-firstname-error';
   const emailErrorId = 'unlock-email-error';
@@ -79,7 +94,7 @@ export default function LeadUnlockForm({ auditId, onSuccess }: LeadUnlockFormPro
           ref={liveRegionRef}
           role="status"
           aria-live="polite"
-          aria-label="Form submitted successfully"
+          aria-label="Report unlocked successfully"
           className="flex items-start gap-3"
         >
           <span className="inline-block w-6 h-6 bg-green-700 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
@@ -90,7 +105,12 @@ export default function LeadUnlockForm({ auditId, onSuccess }: LeadUnlockFormPro
               REPORT UNLOCKED.
             </h3>
             <p className="text-sm text-text-muted leading-relaxed">
-              Your complete action plan is now visible below. A copy has also been sent to {email}.
+              Your complete action plan is now visible below.
+              {emailSent
+                ? ` A copy has been sent to ${email}.`
+                : emailMessage
+                  ? ` ${emailMessage}`
+                  : ' Email delivery could not be confirmed, but you can access the complete report here.'}
             </p>
           </div>
         </div>
@@ -172,8 +192,14 @@ export default function LeadUnlockForm({ auditId, onSuccess }: LeadUnlockFormPro
           />
         </div>
 
-        {/* Turnstile container */}
-        <div id="turnstile-unlock" data-turnstile className="mb-4" />
+        {/* Turnstile */}
+        <div className="mb-4">
+          <TurnstileWidget
+            action="audit_unlock"
+            onToken={setTurnstileToken}
+            resetKey={turnstileResetKey}
+          />
+        </div>
 
         {/* Marketing consent */}
         <div className="mb-6">

@@ -22,12 +22,8 @@ import { env } from '@/lib/env';
  *  1. `x-forwarded-for` — first IP in the list (original client)
  *  2. `x-real-ip`       — set by some reverse proxies
  *  3. Fallback           — `unknown` (never an empty string)
- *
- * @param request  The incoming Request.
- * @returns The client IP string, or `'unknown'` if it cannot be determined.
  */
 export function getClientIp(request: Request): string {
-  // x-forwarded-for may contain: "client-ip, proxy1, proxy2"
   const forwardedFor = request.headers.get('x-forwarded-for');
   if (forwardedFor) {
     const firstIp = forwardedFor.split(',')[0]?.trim();
@@ -48,9 +44,9 @@ export function getClientIp(request: Request): string {
 // ──────────────────────────────────────────────────────────────
 
 const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-const TURNSTILE_TIMEOUT_MS = 10_000; // 10 seconds
+const TURNSTILE_TIMEOUT_MS = 10_000;
 
-/** Official Cloudflare test keys — always pass / always fail. */
+/** Official Cloudflare test keys. */
 const TURNSTILE_TEST_SECRET_ALWAYS_PASSES = '1x0000000000000000000000000000000AA';
 const TURNSTILE_TEST_SECRET_ALWAYS_FAILS = '2x0000000000000000000000000000000AA';
 const TURNSTILE_TEST_SECRET_FORCE_INTERACTIVE = '3x0000000000000000000000000000000AA';
@@ -58,16 +54,8 @@ const TURNSTILE_TEST_SECRET_FORCE_INTERACTIVE = '3x00000000000000000000000000000
 /**
  * Server-side Cloudflare Turnstile token verification.
  *
- * **IMPORTANT**: This function MUST only be called from server-side
- * code (API routes, server actions).  The secret key must never be
- * sent to the browser.
- *
  * In test / development mode (when the official test site key is
  * configured), the verification uses the "always passes" test secret.
- *
- * @param token           The Turnstile response token from the client.
- * @param expectedAction  Optional action string to validate against.
- * @returns `{ success: true }` or `{ success: false, error: string }`.
  */
 export async function verifyTurnstile(
   token: string,
@@ -80,13 +68,11 @@ export async function verifyTurnstile(
   let secret = env.TURNSTILE_SECRET_KEY;
 
   if (!secret) {
-    // If no secret is configured, check if we're in test mode.
     const siteKey = env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
     if (
-      siteKey === '1x00000000000000000000AA' || // always-passes test key
+      siteKey === '1x00000000000000000000AA' ||
       process.env.NODE_ENV !== 'production'
     ) {
-      // Use the official "always passes" test secret.
       secret = TURNSTILE_TEST_SECRET_ALWAYS_PASSES;
     } else {
       return {
@@ -96,25 +82,13 @@ export async function verifyTurnstile(
     }
   }
 
-  // Detect if the provided token is a known test token and use
-  // the matching test secret.
+  // Detect known test tokens
   if (token.startsWith('10000000-aaaa-bbbb-cccc-000000000001')) {
-    // Cloudflare "always passes" test token
     secret = TURNSTILE_TEST_SECRET_ALWAYS_PASSES;
   } else if (token.startsWith('20000000-aaaa-bbbb-cccc-000000000002')) {
-    // Cloudflare "always fails" test token
     secret = TURNSTILE_TEST_SECRET_ALWAYS_FAILS;
   } else if (token.startsWith('30000000-aaaa-bbbb-cccc-000000000003')) {
-    // Cloudflare "force interactive" test token
     secret = TURNSTILE_TEST_SECRET_FORCE_INTERACTIVE;
-  }
-
-  const siteUrl = env.NEXT_PUBLIC_SITE_URL;
-  let expectedHostname: string | undefined;
-  try {
-    expectedHostname = new URL(siteUrl).hostname;
-  } catch {
-    // If SITE_URL is invalid, skip hostname validation.
   }
 
   try {
@@ -127,7 +101,6 @@ export async function verifyTurnstile(
       body: JSON.stringify({
         secret,
         response: token,
-        // remoteip is not sent — we don't need IP-based validation.
       }),
       signal: controller.signal,
     });
@@ -157,19 +130,11 @@ export async function verifyTurnstile(
       };
     }
 
-    // Validate action if an expected action was provided.
+    // Validate action if provided
     if (expectedAction && data.action !== expectedAction) {
       return {
         success: false,
         error: `Turnstile action mismatch. Expected "${expectedAction}", got "${data.action ?? 'null'}".`,
-      };
-    }
-
-    // Validate hostname if we were able to determine it.
-    if (expectedHostname && data.hostname && data.hostname !== expectedHostname) {
-      return {
-        success: false,
-        error: `Turnstile hostname mismatch. Expected "${expectedHostname}", got "${data.hostname}".`,
       };
     }
 
@@ -194,49 +159,80 @@ export async function verifyTurnstile(
 // ──────────────────────────────────────────────────────────────
 
 /**
- * Validate that the request's `Origin` or `Referer` header matches
- * the site's own origin (NEXT_PUBLIC_SITE_URL).
+ * Validate that the request's Origin or Referer header matches
+ * the site's own origin.
  *
- * This prevents cross-origin form submissions from third-party
- * sites.  If neither header is present the check is skipped
- * (some privacy-focused clients strip these headers).
+ * Uses the incoming request's nextUrl.origin as the primary runtime
+ * origin (instead of relying solely on NEXT_PUBLIC_SITE_URL).
+ * Allows the current deployment host.
+ * Optionally allows additional configured origins through
+ * AUDIT_ALLOWED_ORIGINS env var (comma-separated).
  *
- * @param request  The incoming Request.
- * @returns `true` if the origin is valid or cannot be determined,
- *          `false` if it is explicitly from a different origin.
+ * Does not blindly trust forwarded host headers.
  */
-export function validateSameOrigin(request: Request): boolean {
+export function validateSameOrigin(request: Request & { nextUrl?: { origin: string } }): boolean {
+  // Collect allowed origins
+  const allowedOrigins = new Set<string>();
+
+  // 1. Use the incoming request origin as the primary runtime origin
+  const requestOrigin = (request as { nextUrl?: { origin: string } }).nextUrl?.origin;
+  if (requestOrigin) {
+    allowedOrigins.add(requestOrigin);
+  }
+
+  // 2. Allow NEXT_PUBLIC_SITE_URL as a fallback
   const siteUrl = env.NEXT_PUBLIC_SITE_URL;
-  let siteOrigin: string;
-  try {
-    siteOrigin = new URL(siteUrl).origin;
-  } catch {
-    // If SITE_URL is invalid, skip the check.
+  if (siteUrl) {
+    try {
+      allowedOrigins.add(new URL(siteUrl).origin);
+    } catch {
+      // Invalid URL — skip
+    }
+  }
+
+  // 3. Allow additional configured origins
+  const allowedOriginsEnv = env.AUDIT_ALLOWED_ORIGINS;
+  if (allowedOriginsEnv) {
+    for (const origin of allowedOriginsEnv.split(',')) {
+      const trimmed = origin.trim();
+      if (trimmed) {
+        try {
+          allowedOrigins.add(new URL(trimmed).origin);
+        } catch {
+          // Skip invalid URLs
+        }
+      }
+    }
+  }
+
+  // If no origins could be determined, skip the check
+  if (allowedOrigins.size === 0) {
     return true;
   }
 
+  // Check Origin header
   const origin = request.headers.get('origin');
   if (origin) {
     try {
-      const requestOrigin = new URL(origin).origin;
-      return requestOrigin === siteOrigin;
+      const requestOriginStr = new URL(origin).origin;
+      return allowedOrigins.has(requestOriginStr);
     } catch {
       return false;
     }
   }
 
+  // Check Referer header
   const referer = request.headers.get('referer');
   if (referer) {
     try {
       const refererOrigin = new URL(referer).origin;
-      return refererOrigin === siteOrigin;
+      return allowedOrigins.has(refererOrigin);
     } catch {
       return false;
     }
   }
 
-  // Neither header present — allow (can't verify, but don't block
-  // legitimate clients that strip headers).
+  // Neither header present — allow (legitimate clients may strip headers)
   return true;
 }
 
@@ -244,15 +240,6 @@ export function validateSameOrigin(request: Request): boolean {
 // Honeypot field check
 // ──────────────────────────────────────────────────────────────
 
-/**
- * Check whether a honeypot field in the request body has been
- * filled in.  Honeypot fields are hidden from real users but
- * visible to bots that blindly fill every input.
- *
- * @param body       Parsed request body as a plain object.
- * @param fieldName  The honeypot field name (default: `'website_confirm'`).
- * @returns `true` if the honeypot is filled (likely a bot), `false` if clean.
- */
 export function checkHoneypot(
   body: Record<string, unknown>,
   fieldName: string = 'website_confirm',
@@ -260,16 +247,13 @@ export function checkHoneypot(
   const value = body[fieldName];
 
   if (value === undefined || value === null) {
-    // Field not submitted — clean.
     return false;
   }
 
   if (typeof value === 'string' && value.trim() === '') {
-    // Empty string — clean (legitimate user left it blank).
     return false;
   }
 
-  // Any non-empty value means a bot likely filled it.
   return true;
 }
 
@@ -277,18 +261,6 @@ export function checkHoneypot(
 // Body size limit helper
 // ──────────────────────────────────────────────────────────────
 
-/**
- * Read the request body as text, enforcing a maximum size limit.
- *
- * If the body exceeds `maxBytes`, the read is aborted and an
- * error is thrown.  This prevents clients from sending
- * arbitrarily large payloads.
- *
- * @param request  The incoming Request.
- * @param maxBytes Maximum body size in bytes (default: 1 MB).
- * @returns The body as a string.
- * @throws Error if the body is too large or cannot be read.
- */
 export async function readBodyWithLimit(
   request: Request,
   maxBytes: number = 1_024 * 1_024,

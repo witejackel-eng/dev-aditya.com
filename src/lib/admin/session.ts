@@ -101,7 +101,7 @@ export function createSessionCookie(): {
       httpOnly: true,
       secure: isProduction,
       sameSite: 'lax' as const,
-      path: '/admin',
+      path: '/',
       maxAge: Math.floor(SESSION_LIFETIME_MS / 1_000),
     },
   };
