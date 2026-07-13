@@ -14,6 +14,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { db } from '@/db';
 import { auditLeads, audits } from '@/db/schema';
+import { logDbError } from '@/lib/db-error';
 import { eq, desc } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/admin/require-admin';
 import type { AuditFinding, AuditReportData } from '@/lib/audit/types';
@@ -120,7 +121,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (err) {
-    console.error('[admin:export] Unexpected error:', err instanceof Error ? err.message : String(err));
+    logDbError('admin:export', err);
     return NextResponse.json(
       { error: 'Something went wrong exporting leads.' },
       { status: 500 },

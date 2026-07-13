@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { db } from '@/db';
 import { auditLeads, audits, auditEvents } from '@/db/schema';
+import { logDbError } from '@/lib/db-error';
 import { eq, desc, asc, like, and, or, gte, lte, count } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/admin/require-admin';
 
@@ -159,7 +160,7 @@ export async function GET(request: NextRequest) {
       },
     );
   } catch (err) {
-    console.error('[admin:leads] Unexpected error:', err instanceof Error ? err.message : String(err));
+    logDbError('admin:leads', err);
     return NextResponse.json(
       { error: 'Something went wrong fetching leads.' },
       { status: 500 },
@@ -225,7 +226,7 @@ async function getSummaryStats() {
       clientsWon,
     };
   } catch (err) {
-    console.error('[admin:leads] Stats error:', err instanceof Error ? err.message : String(err));
+    logDbError('admin:leads:stats', err);
     return {
       totalAudits: 0,
       completedAudits: 0,

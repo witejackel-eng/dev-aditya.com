@@ -14,6 +14,7 @@ import crypto from 'node:crypto';
 
 import { db } from '@/db';
 import { auditLeads, audits, auditEvents } from '@/db/schema';
+import { logDbError } from '@/lib/db-error';
 import { eq, desc } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/admin/require-admin';
 
@@ -162,7 +163,7 @@ export async function GET(
       },
     );
   } catch (err) {
-    console.error('[admin:lead] GET unexpected error:', err instanceof Error ? err.message : String(err));
+    logDbError('admin:lead:get', err);
     return NextResponse.json(
       { error: 'Something went wrong fetching the lead.' },
       { status: 500 },
@@ -345,7 +346,7 @@ export async function PATCH(
       },
     );
   } catch (err) {
-    console.error('[admin:lead] PATCH unexpected error:', err instanceof Error ? err.message : String(err));
+    logDbError('admin:lead:patch', err);
     return NextResponse.json(
       { error: 'Something went wrong updating the lead.' },
       { status: 500 },

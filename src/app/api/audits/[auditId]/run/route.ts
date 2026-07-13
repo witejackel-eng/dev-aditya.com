@@ -19,6 +19,7 @@ import crypto from 'node:crypto';
 
 import { db } from '@/db';
 import { audits, auditEvents } from '@/db/schema';
+import { logDbError } from '@/lib/db-error';
 import { eq, and } from 'drizzle-orm';
 import { SCANNER_VERSION } from '@/lib/audit/constants';
 import { runAudit } from '@/lib/audit/run-audit';
@@ -68,7 +69,7 @@ function createStatusUpdater(auditId: string) {
         }).catch(() => {});
       }
     } catch (err) {
-      console.error('[audit:run] Failed to update status:', err instanceof Error ? err.message : String(err));
+      logDbError('audit:run:status', err);
     }
   };
 }
@@ -195,7 +196,7 @@ export async function POST(
         finalStatus = 'completed';
       }
     } catch (err) {
-      console.error('[audit:run] Audit pipeline failed:', err instanceof Error ? err.message : String(err));
+      logDbError('audit:run:pipeline', err);
       finalStatus = 'failed';
 
       reportData = {
@@ -285,7 +286,7 @@ export async function POST(
       },
     });
   } catch (err) {
-    console.error('[audit:run] Unexpected error:', err instanceof Error ? err.message : String(err));
+    logDbError('audit:run', err);
 
     // Try to mark the audit as failed
     try {

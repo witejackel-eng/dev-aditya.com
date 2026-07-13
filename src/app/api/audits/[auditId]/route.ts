@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { db } from '@/db';
 import { audits } from '@/db/schema';
+import { logDbError } from '@/lib/db-error';
 import { eq } from 'drizzle-orm';
 import { verifyReportAccessCookie, REPORT_ACCESS_COOKIE_PREFIX, verifyAccessToken } from '@/lib/audit/report-access';
 import { verifySession, ADMIN_COOKIE_NAME } from '@/lib/admin/session';
@@ -169,7 +170,7 @@ export async function GET(
       },
     });
   } catch (err) {
-    console.error('[audit:get] Unexpected error:', err instanceof Error ? err.message : String(err));
+    logDbError('audit:get', err);
     return NextResponse.json(
       { error: 'Something went wrong fetching the audit.' },
       { status: 500 },

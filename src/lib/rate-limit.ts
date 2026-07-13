@@ -9,6 +9,7 @@
 import crypto from 'node:crypto';
 
 import { db } from '@/db';
+import { logDbError } from '@/lib/db-error';
 import { rateLimits } from '@/db/schema';
 import { eq, gt, sql, and } from 'drizzle-orm';
 import { env } from '@/lib/env';
@@ -90,7 +91,7 @@ export async function checkRateLimit(
   } catch (err) {
     // If the rate_limits table doesn't exist yet, allow the request
     // but log the error
-    console.error('[rate-limit] Error:', err instanceof Error ? err.message : String(err));
+    logDbError('rate-limit', err);
     return { allowed: true, remaining: limit - 1, resetAt: new Date(Date.now() + windowMs) };
   }
 }

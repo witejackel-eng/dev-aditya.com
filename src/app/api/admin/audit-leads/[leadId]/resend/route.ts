@@ -15,6 +15,7 @@ import crypto from 'node:crypto';
 
 import { db } from '@/db';
 import { auditLeads, audits, auditEvents } from '@/db/schema';
+import { logDbError } from '@/lib/db-error';
 import { eq } from 'drizzle-orm';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { generateAccessToken } from '@/lib/audit/report-access';
@@ -181,7 +182,7 @@ export async function POST(
       },
     );
   } catch (err) {
-    console.error('[admin:resend] Unexpected error:', err instanceof Error ? err.message : String(err));
+    logDbError('admin:resend', err);
     return NextResponse.json(
       { error: 'Something went wrong resending the email.' },
       { status: 500 },

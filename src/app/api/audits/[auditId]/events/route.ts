@@ -18,6 +18,7 @@ import crypto from 'node:crypto';
 
 import { db } from '@/db';
 import { auditEvents, audits } from '@/db/schema';
+import { logDbError } from '@/lib/db-error';
 import { eq } from 'drizzle-orm';
 import { readBodyWithLimit, validateSameOrigin, getClientIp } from '@/lib/request-security';
 import { checkRateLimit, hashIpForRateLimit } from '@/lib/rate-limit';
@@ -155,7 +156,7 @@ export async function POST(
       },
     );
   } catch (err) {
-    console.error('[audit:events] Unexpected error:', err instanceof Error ? err.message : String(err));
+    logDbError('audit:events', err);
     return NextResponse.json(
       { error: 'Something went wrong recording the event.' },
       { status: 500 },

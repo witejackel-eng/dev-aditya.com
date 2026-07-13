@@ -23,6 +23,7 @@ import crypto from 'node:crypto';
 
 import { db } from '@/db';
 import { audits, auditLeads, auditEvents } from '@/db/schema';
+import { logDbError } from '@/lib/db-error';
 import { eq, and } from 'drizzle-orm';
 import { setReportAccessCookie, generateAccessToken } from '@/lib/audit/report-access';
 import { checkRateLimit, hashIpForRateLimit } from '@/lib/rate-limit';
@@ -418,7 +419,7 @@ export async function POST(
 
     return response;
   } catch (err) {
-    console.error('[audit:unlock] Unexpected error:', err instanceof Error ? err.message : String(err));
+    logDbError('audit:unlock', err);
     return NextResponse.json(
       { error: 'Something went wrong unlocking the report. Please try again.' },
       { status: 500 },

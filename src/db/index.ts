@@ -1,17 +1,26 @@
 /**
  * Database client for the Website Revenue Audit Funnel.
  *
- * Uses @neondatabase/serverless + drizzle-orm/neon-serverless.
+ * Uses @neondatabase/serverless (HTTP driver) + drizzle-orm/neon-http.
  * Falls back to a no-op client at build time when DATABASE_URL is absent
  * or does not point to a PostgreSQL database.
  */
 
-import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
-import { drizzle, type NeonDatabase } from 'drizzle-orm/neon-serverless';
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 
 import * as schema from './schema';
 
-type DbClient = NeonDatabase<typeof schema>;
+function createConfiguredDb(databaseUrl: string) {
+  const sql = neon(databaseUrl);
+
+  return drizzle({
+    client: sql,
+    schema,
+  });
+}
+
+type DbClient = ReturnType<typeof createConfiguredDb>;
 
 function isValidPostgresUrl(url: string): boolean {
   return url.startsWith('postgresql://') || url.startsWith('postgres://');
@@ -34,15 +43,15 @@ function createDb(): DbClient {
       get(_target, prop) {
         if (prop === '__drizzle_no_db') return true;
         throw new Error(
-          `[db] Cannot perform database operation "${String(prop)}" — DATABASE_URL is not configured. Set a Neon PostgreSQL connection string.`,
+          `[db] Cannot perform database operation "${String(
+            prop,
+          )}" — DATABASE_URL is not configured. Set a Neon PostgreSQL connection string.`,
         );
       },
     });
   }
 
-  const sql: NeonQueryFunction<false, false> = neon(databaseUrl);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return drizzle(sql as any, { schema });
+  return createConfiguredDb(databaseUrl);
 }
 
 export const db = createDb();

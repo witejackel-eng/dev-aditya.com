@@ -20,6 +20,7 @@ import crypto from 'node:crypto';
 
 import { db } from '@/db';
 import { audits, auditEvents } from '@/db/schema';
+import { logDbError } from '@/lib/db-error';
 import { SCANNER_VERSION, CACHE_DURATION_HOURS } from '@/lib/audit/constants';
 import { validateAuditUrl } from '@/lib/audit/url-validator';
 import { checkRateLimit, hashIpForRateLimit } from '@/lib/rate-limit';
@@ -200,7 +201,7 @@ export async function POST(request: NextRequest) {
         }
       }
     } catch (err) {
-      console.error('[audit:create] Error checking cache:', err instanceof Error ? err.message : String(err));
+      logDbError('audit:create:cache', err);
       // Continue without cache — don't block audit creation
     }
 
@@ -275,7 +276,7 @@ export async function POST(request: NextRequest) {
       });
     } catch (err) {
       // Event recording is non-critical
-      console.error('[audit:create] Failed to record event:', err instanceof Error ? err.message : String(err));
+      logDbError('audit:create:event', err);
     }
 
     // ── Step 8: Return result ──
@@ -293,7 +294,7 @@ export async function POST(request: NextRequest) {
       },
     );
   } catch (err) {
-    console.error('[audit:create] Unexpected error:', err instanceof Error ? err.message : String(err));
+    logDbError('audit:create', err);
     return NextResponse.json(
       { error: 'Something went wrong creating your audit. Please try again.' },
       { status: 500 },
