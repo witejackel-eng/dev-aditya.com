@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, type FormEvent } from 'react';
+import { useState, useCallback, useRef, useEffect, type FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import TurnstileWidget from '@/components/security/TurnstileWidget';
 
@@ -69,13 +69,15 @@ export default function AuditUrlForm({ onNavigateToAudit, initialUrl = '', compa
 
   // Reset loading when external submitting goes false
   const prevExternalRef = useRef(externalSubmitting);
-  if (prevExternalRef.current && !externalSubmitting) {
-    setLoading(false);
-    // Reset Turnstile on failure
-    setTurnstileResetKey(k => k + 1);
-    setTurnstileToken(null);
-  }
-  prevExternalRef.current = externalSubmitting;
+  useEffect(() => {
+    if (prevExternalRef.current && !externalSubmitting) {
+      setLoading(false);
+      // Reset Turnstile on failure
+      setTurnstileResetKey(k => k + 1);
+      setTurnstileToken(null);
+    }
+    prevExternalRef.current = externalSubmitting;
+  }, [externalSubmitting]);
 
   const displayError = error || externalError;
   const errorId = 'audit-url-error';

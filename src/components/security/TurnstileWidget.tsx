@@ -56,11 +56,12 @@ export default function TurnstileWidget({
 
   // Stable callbacks stored in refs to avoid re-rendering
   const onTokenRef = useRef(onToken);
-  onTokenRef.current = onToken;
   const onErrorRef = useRef(onError);
-  onErrorRef.current = onError;
   const onExpireRef = useRef(onExpire);
-  onExpireRef.current = onExpire;
+
+  useEffect(() => { onTokenRef.current = onToken; }, [onToken]);
+  useEffect(() => { onErrorRef.current = onError; }, [onError]);
+  useEffect(() => { onExpireRef.current = onExpire; }, [onExpire]);
 
   const renderWidget = useCallback(() => {
     if (!window.turnstile || !containerRef.current || !SITE_KEY) return;

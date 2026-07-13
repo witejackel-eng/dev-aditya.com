@@ -66,7 +66,9 @@ export default function AdminAuditLeadsPage() {
   useEffect(() => { fetchData(); }, [page, search, statusFilter]);
 
   if (!authed) {
-    if (typeof window !== 'undefined') window.location.href = '/admin/login';
+    if (typeof window !== 'undefined') {
+      window.location.href = '/admin/login';
+    }
     return null;
   }
 
@@ -101,6 +103,7 @@ export default function AdminAuditLeadsPage() {
             <h1 className="text-2xl md:text-3xl font-bold text-text-primary uppercase tracking-tight">Audit Leads</h1>
           </div>
           <div className="flex gap-3">
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- CSV file download, not page navigation */}
             <a href="/api/admin/audit-leads/export" className="bg-bg-surface border border-border-hard px-4 py-2 text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest text-text-primary hover:bg-bg-surface-2 transition-colors shadow-hard-sm">
               Export CSV
             </a>
