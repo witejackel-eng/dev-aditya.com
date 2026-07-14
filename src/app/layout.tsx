@@ -56,12 +56,24 @@ export const metadata: Metadata = {
     siteName: "Aditya Portfolio",
     locale: "en_US",
     type: "website",
+    // Image is auto-served by src/app/opengraph-image.tsx at /opengraph-image.
+    // metadataBase above resolves this to an absolute https://dev-aditya.com/opengraph-image URL.
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Aditya — Front-End Developer & UI/UX Designer based in Delhi, India",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Aditya — Front-End Developer & UI/UX Designer",
     description:
       "Building high-performance digital interfaces with precision engineering and intentional design.",
+    // Same image as Open Graph — served by src/app/twitter-image.tsx at /twitter-image.
+    images: ["/twitter-image"],
   },
   robots: {
     index: true,
