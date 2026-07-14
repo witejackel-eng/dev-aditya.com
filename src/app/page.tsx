@@ -51,7 +51,7 @@ const projectCards = [
   { category: 'Immersive Experience', title: 'Saffron & Steam', desc: 'An immersive café website with WebGL hero, editorial typography, and day-to-night scroll sequences.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 GSAP' },
   { category: 'B2B Marketing Platform', title: 'Corporate Lead-Gen Platform', desc: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.', tags: 'React \u00B7 Next.js \u00B7 Framer Motion' },
   { category: 'E-commerce', title: 'Driftwear Studio', desc: 'An editorial e-commerce experience for relaxed clothing with full cart flow and Razorpay integration.', tags: 'Next.js \u00B7 TypeScript \u00B7 Zustand \u00B7 Tailwind CSS' },
-  { category: 'Real Estate', title: 'Real Estate Atelier', desc: 'A premium real estate advisory website with curated property collections and cinematic editorial design.', tags: 'Next.js \u00B7 TypeScript \u00B7 GSAP \u00B7 Framer Motion' },
+  { category: 'Legal Practice', title: 'Aarohan Legal', desc: 'An editorial website for an Indian boutique legal practice, shaped around professional restraint, original procedural visuals and a content system designed for careful legal review.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 Framer Motion' },
 ];
 
 const engagementCards = [
@@ -70,7 +70,7 @@ const workItems = [
   { title: 'Saffron & Steam', desc: 'An immersive café website with WebGL hero, editorial typography, and day-to-night scroll sequences.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 GSAP', live: 'https://saffron-steam-experience.vercel.app/', caseStudy: '/work/saffron-steam-experience' },
   { title: 'Corporate Lead-Gen Platform', desc: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.', tags: 'React \u00B7 Next.js \u00B7 Framer Motion', live: 'https://corporate-leadgen-platform-jet.vercel.app/', caseStudy: '/work/corporate-leadgen-platform' },
   { title: 'Driftwear Studio', desc: 'An editorial e-commerce experience for relaxed clothing with full cart flow and Razorpay integration.', tags: 'Next.js \u00B7 TypeScript \u00B7 Zustand \u00B7 Tailwind CSS', live: 'https://driftwear-ecommerce.vercel.app/', caseStudy: '/work/driftwear-ecommerce' },
-  { title: 'Real Estate Atelier', desc: 'A premium real estate advisory website with curated property collections and cinematic editorial design.', tags: 'Next.js \u00B7 TypeScript \u00B7 GSAP \u00B7 Framer Motion', live: 'https://real-estate-atelier.vercel.app/', caseStudy: '/work/real-estate-atelier' },
+  { title: 'Aarohan Legal', desc: 'An editorial website for an Indian boutique legal practice, shaped around professional restraint, original procedural visuals and a content system designed for careful legal review.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 Framer Motion', live: 'https://aarohan-legal.vercel.app/', caseStudy: '/work/aarohan-legal' },
 ];
 
 const processCards = [

@@ -26,7 +26,7 @@ This is a high-performance, SEO-optimized personal portfolio website built with 
 | `/work/saffron-steam-experience` | Case study: Saffron & Steam Immersive Café Experience |
 | `/work/corporate-leadgen-platform` | Case study: B2B Lead-Gen Platform |
 | `/work/driftwear-ecommerce` | Case study: Driftwear Studio E-commerce |
-| `/work/real-estate-atelier` | Case study: Real Estate Atelier Luxury Advisory |
+| `/work/aarohan-legal` | Case study: Aarohan Legal editorial boutique-practice website |
 | `/about` | Background, design philosophy, tech stack |
 | `/mentoring` | Project help for students and small businesses |
 | `/contact` | Contact form + direct contact info |
@@ -100,7 +100,7 @@ src/
 │   │   ├── saffron-steam-experience/page.tsx  # Case study 01
 │   │   ├── corporate-leadgen-platform/page.tsx  # Case study 02
 │   │   ├── driftwear-ecommerce/page.tsx  # Case study 03
-│   │   └── real-estate-atelier/page.tsx  # Case study 04
+│   │   └── aarohan-legal/page.tsx  # Case study 04
 │   ├── about/                  # About page
 │   ├── mentoring/              # Project Help page
 │   ├── contact/                # Contact page + form

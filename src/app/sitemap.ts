@@ -5,7 +5,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const routes = [
     '', '/work', '/packages', '/work/saffron-steam-experience', '/work/corporate-leadgen-platform',
-    '/work/driftwear-ecommerce', '/work/real-estate-atelier', '/about', '/mentoring',
+    '/work/driftwear-ecommerce', '/work/aarohan-legal', '/about', '/mentoring',
     '/contact', '/resources', '/resources/portfolio-checklist',
     '/resources/ai-website-agency', '/resources/frontend-qa',
     '/privacy', '/terms', '/accessibility',

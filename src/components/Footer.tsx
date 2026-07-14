@@ -15,7 +15,7 @@ const projectLinks = [
   { href: '/work/saffron-steam-experience', label: 'Saffron & Steam' },
   { href: '/work/corporate-leadgen-platform', label: 'Corporate Lead-Gen Platform' },
   { href: '/work/driftwear-ecommerce', label: 'Driftwear Studio' },
-  { href: '/work/real-estate-atelier', label: 'Real Estate Atelier' },
+  { href: '/work/aarohan-legal', label: 'Aarohan Legal' },
 ];
 
 export default function Footer() {
