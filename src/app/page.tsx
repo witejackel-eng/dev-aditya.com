@@ -5,6 +5,7 @@ import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
 import { packages, type PackageData } from '@/config/packages';
 import PackageEnquiryDialog from '@/components/PackageEnquiryDialog';
+import { hasInstagram, INSTAGRAM_URL, getSampleEmailLink } from '@/config/socials';
 
 /* ─── Animation variants ─── */
 const fadeUp = {
@@ -27,13 +28,14 @@ function useReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-function AnimatedSection({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+function AnimatedSection({ children, className = '', id }: { children: React.ReactNode; className?: string; id?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
   const reduced = useReducedMotion();
   return (
     <motion.section
       ref={ref}
+      id={id}
       initial={reduced ? 'visible' : 'hidden'}
       animate={isInView ? 'visible' : 'hidden'}
       variants={staggerContainer}
@@ -59,18 +61,6 @@ const engagementCards = [
   { title: 'Business / Corporate Website', bullets: ['Service pages', 'Contact flow', 'Trust sections', 'Performance optimization', 'Clean content structure'] },
   { title: 'Interactive Landing Page', bullets: ['3D/WebGL hero', 'Motion system', 'Scroll-based sections', 'Conversion-focused CTA'] },
   { title: 'Dashboard / Web App UI', bullets: ['Data cards', 'Responsive dashboard', 'Component system', 'Clean frontend architecture'] },
-];
-
-const caseStudies = [
-  { number: '01', category: 'Immersive \u00B7 Hospitality Experience', title: 'Saffron & Steam', outcome: 'An immersive café website with WebGL hero, editorial typography, and day-to-night scroll sequences.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 GSAP', href: '/work/saffron-steam-experience' },
-  { number: '02', category: 'B2B Marketing \u00B7 Lead Generation', title: 'Corporate Lead-Gen Platform', outcome: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.', tags: 'React \u00B7 Next.js \u00B7 Framer Motion', href: '/work/corporate-leadgen-platform' },
-];
-
-const workItems = [
-  { title: 'Saffron & Steam', desc: 'An immersive café website with WebGL hero, editorial typography, and day-to-night scroll sequences.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 GSAP', live: 'https://saffron-steam-experience.vercel.app/', caseStudy: '/work/saffron-steam-experience' },
-  { title: 'Corporate Lead-Gen Platform', desc: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.', tags: 'React \u00B7 Next.js \u00B7 Framer Motion', live: 'https://corporate-leadgen-platform-jet.vercel.app/', caseStudy: '/work/corporate-leadgen-platform' },
-  { title: 'Driftwear Studio', desc: 'An editorial e-commerce experience for relaxed clothing with full cart flow and Razorpay integration.', tags: 'Next.js \u00B7 TypeScript \u00B7 Zustand \u00B7 Tailwind CSS', live: 'https://driftwear-ecommerce.vercel.app/', caseStudy: '/work/driftwear-ecommerce' },
-  { title: 'Aarohan Legal', desc: 'An editorial website for an Indian boutique legal practice, shaped around professional restraint, original procedural visuals and a content system designed for careful legal review.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 Framer Motion', live: 'https://aarohan-legal.vercel.app/', caseStudy: '/work/aarohan-legal' },
 ];
 
 const processCards = [
@@ -212,58 +202,76 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ─── SECTION 2.5: FREE WEBSITE REVENUE AUDIT ─── */}
-      <AnimatedSection className="py-20 bg-bg-surface-2 border-y border-border">
+      {/* ─── SECTION 2.5: FREE HOMEPAGE SAMPLE ─── */}
+      <AnimatedSection id="free-sample" className="py-20 bg-bg-surface-2 border-y border-border scroll-mt-[70px]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left */}
             <div className="lg:col-span-7">
               <motion.p variants={fadeUp} className="font-[family-name:var(--font-mono)] text-xs text-maroon uppercase tracking-widest mb-4">
-                Free Website Revenue Audit
+                Free Homepage Sample
               </motion.p>
               <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl lg:text-4xl font-bold uppercase tracking-tight text-text-primary leading-[1.1]">
-                Find out what is holding your website back.
+                See the direction before you pay.
               </motion.h2>
               <motion.p variants={fadeUp} className="text-text-muted text-base mt-4 leading-relaxed max-w-lg">
-                Run a public-page audit covering mobile speed, SEO foundations, accessibility, security headers and conversion readiness.
+                Send me your current website, Instagram page or business details. I&rsquo;ll create one focused homepage hero concept showing how your website could look before you decide to hire me.
               </motion.p>
             </div>
-            {/* Right - Compact form */}
+            {/* Right - Compact offer panel */}
             <div className="lg:col-span-5">
               <motion.div variants={fadeUp} className="bg-bg-surface border border-border-hard shadow-hard p-6">
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const form = e.currentTarget;
-                    const urlInput = form.elements.namedItem('audit-url') as HTMLInputElement;
-                    const url = urlInput?.value?.trim();
-                    if (url) window.location.href = `/audit?url=${encodeURIComponent(url)}`;
-                  }}
-                  className="space-y-4"
-                >
-                  <div>
-                    <label htmlFor="audit-url" className="block font-[family-name:var(--font-mono)] text-xs uppercase tracking-widest text-text-muted mb-2">
-                      Website URL
-                    </label>
-                    <input
-                      id="audit-url"
-                      name="audit-url"
-                      type="url"
-                      placeholder="https://yourwebsite.com"
-                      required
-                      className="w-full border border-border-hard px-4 py-3 text-sm bg-white text-text-primary focus:outline-none focus:border-maroon transition-colors"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-maroon text-white border border-border-hard px-5 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard-sm hover:bg-maroon-dark transition-colors"
+                <p className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-widest text-text-muted mb-3">
+                  What you receive
+                </p>
+                <ul className="flex flex-col gap-2 mb-6">
+                  <li className="text-sm text-text-primary flex items-start gap-2">
+                    <span className="text-maroon mt-0.5 shrink-0 text-xs" aria-hidden="true">&#x25AA;</span>
+                    <span>One custom homepage hero direction</span>
+                  </li>
+                  <li className="text-sm text-text-primary flex items-start gap-2">
+                    <span className="text-maroon mt-0.5 shrink-0 text-xs" aria-hidden="true">&#x25AA;</span>
+                    <span>One desktop visual concept</span>
+                  </li>
+                  <li className="text-sm text-text-primary flex items-start gap-2">
+                    <span className="text-maroon mt-0.5 shrink-0 text-xs" aria-hidden="true">&#x25AA;</span>
+                    <span>Suggested headline and call-to-action</span>
+                  </li>
+                  <li className="text-sm text-text-primary flex items-start gap-2">
+                    <span className="text-maroon mt-0.5 shrink-0 text-xs" aria-hidden="true">&#x25AA;</span>
+                    <span>A clear visual direction for the full website</span>
+                  </li>
+                  <li className="text-sm text-text-muted flex items-start gap-2">
+                    <span className="text-text-muted mt-0.5 shrink-0 text-xs" aria-hidden="true">&#x25AA;</span>
+                    <span>No editable source files or production code</span>
+                  </li>
+                  <li className="text-sm text-text-muted flex items-start gap-2">
+                    <span className="text-text-muted mt-0.5 shrink-0 text-xs" aria-hidden="true">&#x25AA;</span>
+                    <span>No obligation to continue</span>
+                  </li>
+                </ul>
+                {hasInstagram() ? (
+                  <a
+                    href={INSTAGRAM_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label='DM "SAMPLE" on Instagram — opens in a new tab'
+                    className="w-full bg-maroon text-white border border-border-hard px-5 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard-sm hover:bg-maroon-dark transition-colors block text-center"
                   >
-                    Run Free Audit &rarr;
-                  </button>
-                  <p className="text-xs text-text-muted leading-relaxed">
-                    No password required. Only publicly available website information is analyzed.
-                  </p>
-                </form>
+                    DM &ldquo;SAMPLE&rdquo; ON INSTAGRAM &rarr;
+                  </a>
+                ) : (
+                  <a
+                    href={getSampleEmailLink()}
+                    aria-label="Request free homepage sample by email"
+                    className="w-full bg-maroon text-white border border-border-hard px-5 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard-sm hover:bg-maroon-dark transition-colors block text-center"
+                  >
+                    REQUEST FREE SAMPLE BY EMAIL &rarr;
+                  </a>
+                )}
+                <p className="text-xs text-text-muted leading-relaxed mt-4">
+                  Send your business name, current website or Instagram page, what you offer, and what feels wrong with the current website.
+                </p>
               </motion.div>
             </div>
           </div>
@@ -434,84 +442,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* ─── SECTION 5: SELECTED CASE STUDIES ─── */}
-      <AnimatedSection className="py-24 max-w-7xl mx-auto px-6">
-        <motion.p variants={fadeUp} className="font-[family-name:var(--font-mono)] text-xs text-maroon uppercase tracking-widest mb-4">
-          Selected work
-        </motion.p>
-        <div className="flex flex-col gap-6">
-          {caseStudies.map((study) => (
-            <motion.div
-              key={study.number}
-              variants={fadeUp}
-              className="bg-white border border-border-hard p-6 md:p-8 hover:-translate-y-1 hover:shadow-hard-hover transition-all duration-200 group relative overflow-hidden"
-            >
-              <div className="absolute bottom-0 left-0 w-full h-1 bg-maroon opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-              <p className="font-[family-name:var(--font-mono)] text-xs text-text-muted">
-                {study.number} &mdash; {study.category}
-              </p>
-              <h3 className="text-2xl md:text-3xl font-bold mt-2 text-text-primary group-hover:text-maroon transition-colors duration-200">
-                {study.title}
-              </h3>
-              <p className="text-text-muted mt-2">{study.outcome}</p>
-              <p className="font-[family-name:var(--font-mono)] text-xs text-text-muted mt-4">{study.tags}</p>
-              <Link href={study.href} className="text-maroon text-sm mt-4 inline-block hover:underline font-[family-name:var(--font-mono)] uppercase tracking-widest">
-                Read the full case &rarr;
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-        <motion.div variants={fadeUp} className="mt-8">
-          <Link href="/work" className="text-maroon hover:underline inline-block font-[family-name:var(--font-mono)] text-sm uppercase tracking-widest">
-            See all work &amp; projects &rarr;
-          </Link>
-        </motion.div>
-      </AnimatedSection>
-
-      {/* ─── SECTION 6: WHAT I ACTUALLY DO ─── */}
-      <AnimatedSection className="py-24 max-w-7xl mx-auto px-6">
-        <motion.p variants={fadeUp} className="font-[family-name:var(--font-mono)] text-xs text-maroon uppercase tracking-widest">
-          What I actually do
-        </motion.p>
-        <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold mt-4 mb-6 text-text-primary">
-          I turn unclear ideas into interfaces people can use.
-        </motion.h2>
-        <motion.p variants={fadeUp} className="text-text-muted max-w-2xl text-lg leading-relaxed">
-          Some projects start as a rough idea, a messy layout, or a website that does not feel good enough. I structure the page, design the interaction, build the frontend, and polish the experience until it feels clear, fast, and ready to show.
-        </motion.p>
-
-        <div className="mt-12 flex flex-col">
-          {workItems.map((item, i) => (
-            <motion.div
-              key={item.title}
-              variants={fadeUp}
-              className="border-b border-border py-8 flex flex-col md:flex-row md:items-start gap-4 group"
-            >
-              <span className="font-[family-name:var(--font-mono)] text-text-muted text-sm shrink-0">{String(i + 1).padStart(2, '0')}</span>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-text-primary group-hover:text-maroon transition-colors duration-200">{item.title}</h3>
-                <p className="text-text-muted text-sm mt-1 leading-relaxed">{item.desc}</p>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {item.tags.split(' \u00B7 ').map((tag) => (
-                    <span key={tag} className="bg-maroon-soft text-maroon font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wider px-2 py-0.5">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="flex gap-4 shrink-0 text-sm">
-                <a href={item.live} target="_blank" rel="noopener noreferrer" className="text-maroon hover:underline font-[family-name:var(--font-mono)] uppercase tracking-widest text-xs">
-                  VIEW PROJECT &rarr;
-                </a>
-                <Link href={item.caseStudy} className="text-text-muted hover:text-text-primary transition-colors font-[family-name:var(--font-mono)] uppercase tracking-widest text-xs">
-                  CASE STUDY &rarr;
-                </Link>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </AnimatedSection>
 
       {/* ─── SECTION 7: WHO YOU'D BE WORKING WITH ─── */}
       <AnimatedSection className="py-24 max-w-7xl mx-auto px-6">
