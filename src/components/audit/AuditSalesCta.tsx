@@ -2,7 +2,6 @@
 
 import { useCallback } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 import type { AuditFinding } from '@/lib/audit/types';
 import { auditOffer } from '@/config/audit-offer';
 import { CONTACT_EMAIL } from '@/config/contact';
@@ -87,8 +86,8 @@ export default function AuditSalesCta({ hostname, overallScore, reportId, topFin
         </p>
       </div>
 
-      {/* CTA buttons */}
-      <div className="flex flex-col sm:flex-row gap-3">
+      {/* CTA button */}
+      <div>
         <a
           href={mailtoHref}
           onClick={handleEmailClick}
@@ -96,13 +95,6 @@ export default function AuditSalesCta({ hostname, overallScore, reportId, topFin
         >
           EMAIL ADITYA ABOUT MY AUDIT →
         </a>
-
-        <Link
-          href="/packages"
-          className="inline-block bg-bg-surface text-text-primary border border-border-hard px-6 py-4 text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium hover:bg-bg-surface-2 transition-all duration-200 text-center"
-        >
-          VIEW EXISTING PACKAGES
-        </Link>
       </div>
     </motion.div>
   );

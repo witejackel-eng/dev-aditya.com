@@ -1,10 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import Link from 'next/link';
-import { packages, type PackageData } from '@/config/packages';
-import PackageEnquiryDialog from '@/components/PackageEnquiryDialog';
 import { hasInstagram, INSTAGRAM_URL, getSampleEmailLink } from '@/config/socials';
 
 /* ─── Animation variants ─── */
@@ -81,19 +79,6 @@ const specRows = [
 /* ═══════════════════════════════════════════════════════════════ */
 
 export default function Home() {
-  const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
-  const [selectedPkg, setSelectedPkg] = useState<PackageData | null>(null);
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-
-  const handleGetStarted = (pkg: PackageData, btn: HTMLButtonElement) => {
-    setSelectedPkg(pkg);
-    triggerRef.current = btn;
-    setIsEnquiryOpen(true);
-  };
-
-  const handleCloseEnquiry = () => {
-    setIsEnquiryOpen(false);
-  };
   return (
     <>
       {/* ─── SECTION 1: HERO ─── */}
@@ -338,112 +323,7 @@ export default function Home() {
         </motion.div>
       </AnimatedSection>
 
-      {/* ─── SECTION 4.5: WEBSITE PACKAGES ─── */}
-      <section className="border-t border-border-hard">
-        <div className="max-w-7xl mx-auto px-6 py-24">
-          <AnimatedSection className="mb-0">
-            <motion.div variants={fadeUp} className="flex items-center gap-2 mb-4">
-              <span className="w-3 h-3 bg-maroon inline-block" />
-              <span className="font-[family-name:var(--font-mono)] text-xs text-text-muted tracking-widest uppercase">
-                Pricing
-              </span>
-            </motion.div>
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-14">
-              <div>
-                <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold text-text-primary tracking-tight">
-                  Website Packages
-                </motion.h2>
-                <motion.p variants={fadeUp} className="text-text-muted max-w-xl mt-3 leading-relaxed">
-                  Clear scope, transparent pricing, no hidden costs. Every package includes responsive design, clean code, and deployment.
-                </motion.p>
-              </div>
-              <motion.div variants={fadeUp}>
-                <Link href="/packages" className="text-maroon hover:underline font-[family-name:var(--font-mono)] text-sm uppercase tracking-widest">
-                  View full details &rarr;
-                </Link>
-              </motion.div>
-            </div>
-
-            {/* Introductory pricing notice */}
-            <motion.div variants={fadeUp} className="border-l-2 border-maroon pl-4 max-w-xl mt-6">
-              <p className="text-text-primary text-[14px] font-medium leading-[1.6]">
-                Introductory pricing for a limited number of new client projects.
-              </p>
-            </motion.div>
-          </AnimatedSection>
-
-          {/* 3 Package Cards */}
-          <AnimatedSection className="mb-0">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {packages.map((pkg) => (
-                <motion.div
-                  key={pkg.id}
-                  variants={fadeUp}
-                  className={`bg-bg-surface flex flex-col relative overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-hard-hover ${
-                    pkg.recommended
-                      ? 'border-2 border-border-hard p-6 md:p-7 shadow-hard border-t-[3px] border-t-maroon'
-                      : 'border border-border-hard p-6 md:p-7 shadow-hard-sm'
-                  }`}
-                >
-                  {pkg.recommended && (
-                    <div className="absolute -top-3 left-6 bg-maroon text-white px-3 py-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-widest font-medium border border-border-hard">
-                      Most Popular
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between mb-5">
-                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-text-muted uppercase tracking-widest">{pkg.num}</span>
-                    <span className="font-[family-name:var(--font-mono)] text-[10px] text-maroon uppercase tracking-widest bg-maroon-soft px-2.5 py-1 font-medium">{pkg.name}</span>
-                  </div>
-                  <p className="text-3xl font-black text-text-primary tracking-tight">{pkg.price}</p>
-                  <p className="font-[family-name:var(--font-mono)] text-[11px] text-text-muted mt-1">{pkg.priceNote}</p>
-                  <p className="text-text-muted text-sm leading-relaxed mt-4 mb-6">
-                    {pkg.description}
-                  </p>
-                  <ul className="flex flex-col gap-2.5 mb-8 flex-1">
-                    {pkg.includes.slice(0, 6).map((item) => (
-                      <li key={item} className="text-text-muted text-[13px] flex items-start gap-2.5">
-                        <span className="text-maroon mt-0.5 shrink-0 text-xs">&#x2713;</span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    onClick={(e) => handleGetStarted(pkg, e.currentTarget)}
-                    aria-label={`Get Started with the ${pkg.name} package at ${pkg.price}`}
-                    className={`block w-full text-center px-5 py-3 text-xs font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium border border-border-hard transition-all duration-200 cursor-pointer ${
-                      pkg.recommended
-                        ? 'bg-maroon text-white shadow-hard-sm hover:bg-maroon-dark'
-                        : 'bg-white text-text-primary shadow-hard-sm hover:bg-maroon hover:text-white hover:border-maroon'
-                    }`}
-                  >
-                    GET STARTED &rarr;
-                  </button>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Scope exclusion note */}
-            <motion.div variants={fadeUp} className="mt-8 border-t border-border pt-6">
-              <p className="text-text-muted text-[13px] leading-[1.7] max-w-3xl">
-                E-commerce functionality, payment gateways, custom dashboards, authentication, databases, complex web applications, multilingual systems and third-party subscription costs are quoted separately.
-              </p>
-            </motion.div>
-          </AnimatedSection>
-
-          {/* Payment terms */}
-          <div className="mt-12 border-t border-border pt-10">
-            <div className="flex items-center gap-4 mb-4">
-              <span className="font-[family-name:var(--font-mono)] text-2xl font-black text-text-primary">50<span className="text-maroon">/</span>50</span>
-              <div className="h-[2px] flex-1 bg-border-hard" />
-            </div>
-            <p className="text-text-muted text-[14px] leading-[1.7] max-w-2xl">
-              50% upfront confirms your booking and allows work to begin. The remaining 50% is payable after the approved website has been successfully deployed to your chosen hosting provider and domain.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── SECTION 7: WHO YOU'D BE WORKING WITH ─── */}
+      {/* ─── SECTION 5: WHO YOU'D BE WORKING WITH ─── */}
       <AnimatedSection className="py-24 max-w-7xl mx-auto px-6">
         <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-bold text-text-primary">
           Who you&apos;d be working with
@@ -514,13 +394,6 @@ export default function Home() {
         </motion.div>
       </AnimatedSection>
 
-      {/* ─── ENQUIRY DIALOG ─── */}
-      <PackageEnquiryDialog
-        isOpen={isEnquiryOpen}
-        onClose={handleCloseEnquiry}
-        pkg={selectedPkg}
-        triggerRef={triggerRef}
-      />
     </>
   );
 }
