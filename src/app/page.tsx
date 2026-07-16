@@ -52,7 +52,7 @@ const marqueeItems = 'React \u25C6 Next.js \u25C6 TypeScript \u25C6 Tailwind CSS
 const projectCards = [
   { category: 'Immersive Experience', title: 'Saffron & Steam', desc: 'An immersive café website with WebGL hero, editorial typography, and day-to-night scroll sequences.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 GSAP' },
   { category: 'B2B Marketing Platform', title: 'Corporate Lead-Gen Platform', desc: 'Corporate Lead-Gen Platform with modular sections, polished animations, and conversion-focused layout.', tags: 'React \u00B7 Next.js \u00B7 Framer Motion' },
-  { category: 'E-commerce', title: 'Driftwear Studio', desc: 'An editorial e-commerce experience for relaxed clothing with full cart flow and Razorpay integration.', tags: 'Next.js \u00B7 TypeScript \u00B7 Zustand \u00B7 Tailwind CSS' },
+  { category: 'Creative Coding', title: 'DUST//SIGNAL', desc: 'A cinematic computational observatory where probability, mathematical systems, procedural sound, and motion become one interactive web experience.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 GSAP', caseStudy: '/work/dust-signal' },
   { category: 'Legal Practice', title: 'Aarohan Legal', desc: 'An editorial website for an Indian boutique legal practice, shaped around professional restraint, original procedural visuals and a content system designed for careful legal review.', tags: 'Next.js \u00B7 TypeScript \u00B7 Three.js \u00B7 Framer Motion' },
 ];
 
@@ -297,7 +297,7 @@ export default function Home() {
               <p className="font-[family-name:var(--font-mono)] text-[11px] text-maroon uppercase tracking-widest mb-2">
                 {card.category}
               </p>
-              <h3 className="text-xl font-bold mb-2 text-text-primary">{card.title}</h3>
+              <h3 className="text-xl font-bold mb-2 text-text-primary">{card.caseStudy ? <Link href={card.caseStudy} className="hover:text-maroon transition-colors duration-200">{card.title}</Link> : card.title}</h3>
               <p className="text-text-muted text-sm leading-relaxed">{card.desc}</p>
               <div className="flex flex-wrap gap-2 mt-4">
                 {card.tags.split(' \u00B7 ').map((tag) => (

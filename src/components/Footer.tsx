@@ -14,7 +14,7 @@ const pageLinks = [
 const projectLinks = [
   { href: '/work/saffron-steam-experience', label: 'Saffron & Steam' },
   { href: '/work/corporate-leadgen-platform', label: 'Corporate Lead-Gen Platform' },
-  { href: '/work/driftwear-ecommerce', label: 'Driftwear Studio' },
+  { href: '/work/dust-signal', label: 'DUST//SIGNAL' },
   { href: '/work/aarohan-legal', label: 'Aarohan Legal' },
 ];
 

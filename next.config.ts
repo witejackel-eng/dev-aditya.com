@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         destination: '/work/aarohan-legal',
         permanent: true,
       },
+      {
+        source: '/work/driftwear-ecommerce',
+        destination: '/work/dust-signal',
+        permanent: true,
+      },
     ];
   },
 };
