@@ -2,9 +2,17 @@ import { Metadata } from 'next';
 import AboutContent from './AboutContent';
 
 export const metadata: Metadata = {
-  title: 'About — Front-End Developer & UI/UX Designer',
+  title: 'About — Independent Web Designer & Frontend Developer',
   description:
-    "I'm Aditya — a Front-End Developer & UI/UX Designer based in Delhi, India, building high-performance, accessible, and visually compelling digital products.",
+    "I'm Aditya, an independent web designer and frontend developer based in Delhi, India, working with B2B companies and professional-service firms in India and internationally.",
+  alternates: { canonical: '/about' },
+  openGraph: {
+    title: 'About Aditya',
+    description:
+      'Independent web designer and frontend developer based in Delhi, working between design and engineering for B2B and professional-service firms.',
+    url: '/about',
+    type: 'profile',
+  },
 };
 
 export default function AboutPage() {

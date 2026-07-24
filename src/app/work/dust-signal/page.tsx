@@ -1,17 +1,16 @@
 import { Metadata } from 'next';
 import CaseStudyContent from '@/components/CaseStudyContent';
 
-const baseUrl = 'https://dev-aditya.com';
-
 export const metadata: Metadata = {
-  title: 'DUST//SIGNAL — Building a computational observatory where probability has a pulse | Aditya',
+  title: 'DUST//SIGNAL — A computational observatory where probability has a pulse | Aditya',
   description:
-    'An original experimental web experience combining mathematical simulations, generative visuals, cinematic motion, and procedural audio using Next.js, TypeScript, Three.js, GSAP, and the Web Audio API.',
+    'An independent concept project combining mathematical simulations, generative visuals, cinematic motion, and procedural audio using Next.js, TypeScript, Three.js, GSAP, and the Web Audio API.',
+  alternates: { canonical: '/work/dust-signal' },
   openGraph: {
     title: 'DUST//SIGNAL — Probability Has a Pulse',
     description:
-      'A computational observatory exploring mathematics, uncertainty, rhythm, and motion through an original interactive web experience.',
-    url: `${baseUrl}/work/dust-signal`,
+      'A computational observatory exploring mathematics, uncertainty, rhythm, and motion through an independent interactive concept project.',
+    url: '/work/dust-signal',
     type: 'article',
   },
   twitter: {
@@ -25,7 +24,8 @@ export const metadata: Metadata = {
 export default function DustSignalCaseStudy() {
   return (
     <CaseStudyContent
-      meta="CASE STUDY 03 · CREATIVE CODING · NEXT.JS / TYPESCRIPT / THREE.JS / GSAP / WEB AUDIO"
+      meta="CASE STUDY · CREATIVE TECHNOLOGY · NEXT.JS / TYPESCRIPT / THREE.JS / GSAP / WEB AUDIO"
+      disclosure="This is an independent concept project created to explore a specific design and technical direction. It was not commissioned by any organisation."
       title="Building a computational observatory where probability has a pulse"
       summary="DUST//SIGNAL is an original interactive digital experience built around mathematics, sound, and cinematic scale. It transforms stochastic motion, covariance, Fourier composition, and rhythmic sequencing into a connected computational world that visitors can observe, control, and hear."
       proof={[

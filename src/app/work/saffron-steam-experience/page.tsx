@@ -2,14 +2,22 @@ import { Metadata } from 'next';
 import CaseStudyContent from '@/components/CaseStudyContent';
 
 export const metadata: Metadata = {
-  title: 'Saffron & Steam — Building an immersive café experience with WebGL and editorial design',
-  description: 'An immersive, motion-led concept café website with a WebGL hero, day-to-night scroll sequences, editorial typography, and an interactive signature-menu rail.',
+  title: 'Saffron & Steam — An immersive café experience with WebGL and editorial design',
+  description: 'An independent concept café website with a WebGL hero, day-to-night scroll sequences, editorial typography, and an interactive signature-menu rail.',
+  alternates: { canonical: '/work/saffron-steam-experience' },
+  openGraph: {
+    title: 'Saffron & Steam — Immersive Café Experience Concept',
+    description: 'An independent concept café website exploring WebGL, motion and editorial design.',
+    url: '/work/saffron-steam-experience',
+    type: 'article',
+  },
 };
 
 export default function SaffronSteamCaseStudy() {
   return (
     <CaseStudyContent
-      meta="CASE STUDY 01 · IMMERSIVE EXPERIENCE · NEXT.JS / TYPESCRIPT / THREE.JS / GSAP"
+      meta="CASE STUDY · CREATIVE TECHNOLOGY · NEXT.JS / TYPESCRIPT / THREE.JS / GSAP"
+      disclosure="This is an independent concept project created to explore a specific design and technical direction. It was not commissioned by the represented business."
       title="Building an immersive café experience with WebGL and editorial design"
       summary="An immersive, motion-led concept café website with a WebGL hero featuring a sculptural ceramic cup and flowing saffron steam ribbon, editorial typography, day-to-night scroll sequences, and an interactive signature-menu rail — built around a Delhi garden café at golden hour."
       proof={[

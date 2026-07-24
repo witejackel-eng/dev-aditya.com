@@ -1,13 +1,15 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { CONTACT_EMAIL, CONTACT_EMAIL_HREF } from '@/config/contact';
 
 export const metadata: Metadata = {
-  title: 'Aarohan Legal — Designing an editorial digital presence for an Indian boutique legal practice',
-  description: 'A detailed case study of Aarohan Legal, an original Next.js and WebGL website balancing editorial design, professional restraint, accessibility, security and legal-content governance.',
+  title: 'Aarohan Legal — Editorial digital presence for a boutique legal practice',
+  description: 'A detailed case study of Aarohan Legal, an independent concept project balancing editorial design, professional restraint, accessibility, security and legal-content governance.',
+  alternates: { canonical: '/work/aarohan-legal' },
   openGraph: {
-    title: 'Aarohan Legal — Editorial Digital Presence for an Indian Boutique Legal Practice',
-    description: 'A detailed case study of Aarohan Legal, an original Next.js and WebGL website balancing editorial design, professional restraint, accessibility, security and legal-content governance.',
-    url: 'https://dev-aditya.com/work/aarohan-legal',
+    title: 'Aarohan Legal — Editorial Digital Presence for a Boutique Legal Practice',
+    description: 'A detailed case study of Aarohan Legal, an independent concept project balancing editorial design, professional restraint, accessibility, security and legal-content governance.',
+    url: '/work/aarohan-legal',
     type: 'article',
   },
 };
@@ -138,7 +140,7 @@ export default function AarohanLegalCaseStudy() {
         <MetaGrid
           items={[
             { label: 'Sector', value: 'Indian Legal Practice' },
-            { label: 'Project Type', value: 'Independent Portfolio Project' },
+            { label: 'Project Type', value: 'Independent Concept Project' },
             { label: 'Role', value: 'Brand Direction, UI/UX, Frontend, WebGL and Content Architecture' },
             { label: 'Platform', value: 'Responsive Web' },
             { label: 'Visual System', value: 'Original Procedural Illustration' },
@@ -164,6 +166,10 @@ export default function AarohanLegalCaseStudy() {
             View GitHub Repository &nearr;
           </a>
         </div>
+
+        <p className="mt-8 border-l-2 border-maroon bg-bg-surface-2 px-4 py-3 text-sm text-text-muted leading-relaxed max-w-3xl">
+          This is an independent concept project created to explore a specific design and technical direction. It was not commissioned by the represented practice.
+        </p>
       </section>
 
       {/* ─── PROOF CARDS ─── */}
@@ -632,12 +638,20 @@ export default function AarohanLegalCaseStudy() {
         <p className="text-text-muted text-base max-w-2xl mt-4 leading-[1.7]">
           I design and build clear, responsive digital experiences for businesses and professional practices that need strong visual identity, careful content structure and production-ready frontend implementation.
         </p>
-        <a
-          href="mailto:hi.aditya.dev@gmail.com"
-          className="inline-block mt-8 bg-maroon text-white border border-border-hard px-6 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard hover:bg-maroon-dark transition-colors duration-200"
-        >
-          EMAIL ME &rarr;
-        </a>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-5 mt-8">
+          <Link
+            href="/contact"
+            className="inline-block bg-maroon text-white border border-border-hard px-6 py-3.5 text-[12px] font-[family-name:var(--font-mono)] uppercase tracking-[0.15em] font-medium shadow-hard hover:bg-maroon-dark transition-colors duration-200"
+          >
+            DISCUSS A PROJECT &rarr;
+          </Link>
+          <a
+            href={CONTACT_EMAIL_HREF}
+            className="text-text-muted hover:text-maroon transition-colors text-sm font-[family-name:var(--font-mono)]"
+          >
+            {CONTACT_EMAIL}
+          </a>
+        </div>
       </section>
     </div>
   );

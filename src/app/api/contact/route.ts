@@ -5,9 +5,12 @@ export const runtime = 'nodejs';
 interface ContactBody {
   name?: string;
   email?: string;
-  project?: string;
-  budget?: string;
-  timeline?: string;
+  company?: string;
+  website?: string;
+  projectType?: string;
+  scope?: string;
+  timing?: string;
+  details?: string;
   _honey?: string;
 }
 
@@ -18,15 +21,15 @@ export async function POST(request: NextRequest) {
     // Honeypot check — if filled, silently accept (spam)
     if (body._honey) {
       return NextResponse.json(
-        { success: true, message: 'Message received. I\'ll get back to you soon.' },
+        { success: true, message: 'Enquiry received. I\'ll reply within 1–2 business days.' },
         { status: 200 },
       );
     }
 
     // Validate required fields
-    if (!body.name || !body.email || !body.project) {
+    if (!body.name || !body.email || !body.details) {
       return NextResponse.json(
-        { success: false, message: 'Name, email, and project description are required.' },
+        { success: false, message: 'Name, work email, and project details are required.' },
         { status: 400 },
       );
     }
@@ -40,18 +43,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Log the submission (no email service configured)
-    console.log('--- Contact Form Submission ---');
+    // Log the submission (no email service configured for this endpoint)
+    console.log('--- Project Enquiry ---');
     console.log('Name:', body.name);
     console.log('Email:', body.email);
-    console.log('Project:', body.project);
-    if (body.budget) console.log('Budget:', body.budget);
-    if (body.timeline) console.log('Timeline:', body.timeline);
-    console.log('--- End Submission ---');
+    if (body.company) console.log('Company:', body.company);
+    if (body.website) console.log('Website:', body.website);
+    if (body.projectType) console.log('Project type:', body.projectType);
+    if (body.scope) console.log('Scope:', body.scope);
+    if (body.timing) console.log('Timing:', body.timing);
+    console.log('Details:', body.details);
+    console.log('--- End Enquiry ---');
 
     return NextResponse.json({
       success: true,
-      message: 'Message received. I\'ll get back to you soon.',
+      message: 'Enquiry received. I\'ll reply within 1–2 business days.',
     });
   } catch {
     return NextResponse.json(

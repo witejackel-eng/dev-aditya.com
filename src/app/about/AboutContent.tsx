@@ -1,74 +1,176 @@
 'use client';
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
 
-function FadeIn({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: '-60px' });
-  return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 16 }} animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }} transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }} className={className}>
-      {children}
-    </motion.div>
-  );
-}
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { Reveal, fadeUp } from '@/components/Reveal';
+import { CAPABILITIES, TOOL_GROUPS } from '@/config/capabilities';
+import { CONTACT_LOCATION } from '@/config/contact';
 
 export default function AboutContent() {
   return (
     <div>
-      <section className="pt-32 pb-16 max-w-7xl mx-auto px-6">
-        <FadeIn><span className="font-[family-name:var(--font-mono)] text-xs text-maroon uppercase tracking-widest">About</span></FadeIn>
-        <FadeIn delay={0.08}><h1 className="text-4xl md:text-5xl font-bold mt-4 leading-tight text-text-primary">I&apos;m the developer you call when the interface needs to feel sharp.</h1></FadeIn>
-        <FadeIn delay={0.16}><p className="text-text-muted text-lg max-w-3xl mt-6 leading-relaxed">I&apos;m Aditya &mdash; a Front-End Developer &amp; UI/UX Designer based in Delhi, India. I build high-performance, accessible, and visually compelling digital products for people who want their website or app to feel polished, fast, and intentional.</p></FadeIn>
+      {/* Intro */}
+      <section className="pt-[110px] pb-16 max-w-7xl mx-auto px-6 border-b border-border">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="flex items-center gap-3 mb-8"
+        >
+          <span className="w-3 h-3 bg-maroon inline-block" />
+          <span className="font-[family-name:var(--font-mono)] text-[11px] text-text-muted uppercase tracking-[0.2em]">
+            About
+          </span>
+        </motion.div>
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+          className="text-[clamp(2.25rem,5vw,3.5rem)] font-bold tracking-tight leading-[1.1] text-text-primary max-w-3xl"
+        >
+          Design judgment supported by technical execution.
+        </motion.h1>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.15 }}
+          className="max-w-3xl mt-8 space-y-4 text-text-muted text-lg leading-relaxed"
+        >
+          <p>
+            I&apos;m Aditya, an independent web designer and frontend developer
+            based in Delhi, India.
+          </p>
+          <p>
+            I work with companies that need more than a visually polished
+            website. The work begins with structure: understanding what the
+            organisation offers, what its audience needs to understand and what
+            action the website should make easier.
+          </p>
+          <p>
+            I then translate that structure into a clear interface and
+            production-ready frontend.
+          </p>
+        </motion.div>
       </section>
 
-      <section className="mt-20 max-w-7xl mx-auto px-6">
-        <FadeIn><h2 className="text-2xl font-bold mb-6 text-text-primary">The short version</h2></FadeIn>
-        <FadeIn delay={0.08}><p className="text-text-muted leading-relaxed max-w-3xl">I specialize in frontend development, UI/UX design, motion, and creative web experiences. Every project starts from the same question: what does this interface need to do, and what is the fastest, clearest way to let it do that.</p></FadeIn>
-        <FadeIn delay={0.16}><p className="text-text-muted leading-relaxed max-w-3xl mt-4">When I&apos;m not coding, you&apos;ll find me exploring new design trends, gaming, or experimenting with creative coding and 3D web experiences.</p></FadeIn>
-      </section>
-
-      <section className="mt-20 max-w-7xl mx-auto px-6">
-        <FadeIn><h2 className="text-2xl font-bold mb-8 text-text-primary">How I think</h2></FadeIn>
-        <div className="grid md:grid-cols-2 gap-4">
+      {/* How design and engineering combine */}
+      <Reveal className="py-16 md:py-20 max-w-7xl mx-auto px-6">
+        <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold tracking-tight text-text-primary max-w-2xl leading-[1.2]">
+          Where design and engineering meet.
+        </motion.h2>
+        <div className="grid md:grid-cols-2 gap-4 mt-10">
           {[
-            { title: 'Context before visuals', desc: 'I first understand the goal: trust, leads, clarity, product value, or a stronger first impression.' },
-            { title: 'Structure before decoration', desc: 'A beautiful website still fails if the sections are confusing. I care about hierarchy, layout, and user flow before effects.' },
-            { title: 'Motion with purpose', desc: 'Animation should guide attention, not distract from the message.' },
-            { title: 'Ship clean', desc: 'I care about responsive behavior, accessibility, performance, and final polish.' },
-          ].map((card, i) => (
-            <FadeIn key={card.title} delay={i * 0.06}>
-              <div className="bg-white border border-border-hard p-6 h-full shadow-hard-sm">
-                <h3 className="font-bold text-lg mb-2 text-text-primary">{card.title}</h3>
-                <p className="text-text-muted text-sm leading-relaxed">{card.desc}</p>
-              </div>
-            </FadeIn>
+            {
+              title: 'Structure before decoration',
+              desc: 'Information architecture and page hierarchy come first, so the website communicates before a visitor reads a single line of detail.',
+            },
+            {
+              title: 'Design that carries intent',
+              desc: 'Layout, typography, spacing and motion are used to establish credibility and guide attention, not to decorate.',
+            },
+            {
+              title: 'Production-ready frontend',
+              desc: 'The approved design is implemented as accessible, responsive, maintainable code, faithful to the direction we agreed.',
+            },
+            {
+              title: 'Careful delivery',
+              desc: 'Performance, accessibility and technical SEO are checked before launch, followed by an organised handover.',
+            },
+          ].map((card) => (
+            <motion.div
+              key={card.title}
+              variants={fadeUp}
+              className="bg-white border border-border-hard p-6 h-full shadow-hard-sm"
+            >
+              <h3 className="font-bold text-lg mb-2 text-text-primary tracking-tight">{card.title}</h3>
+              <p className="text-text-muted text-sm leading-[1.7]">{card.desc}</p>
+            </motion.div>
           ))}
         </div>
-      </section>
+      </Reveal>
 
-      <section className="mt-20 max-w-7xl mx-auto px-6 pb-16">
-        <FadeIn><h2 className="text-2xl font-bold mb-8 text-text-primary">Stack</h2></FadeIn>
+      {/* Core capabilities */}
+      <Reveal className="py-16 md:py-20 border-t border-border bg-bg-surface-2">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold tracking-tight text-text-primary">
+            Core capabilities
+          </motion.h2>
+          <motion.ul variants={fadeUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-3 mt-8 border-t border-border pt-8">
+            {CAPABILITIES.map((item) => (
+              <li key={item} className="flex items-start gap-3 text-[15px] text-text-primary leading-snug">
+                <span className="text-maroon mt-0.5 shrink-0" aria-hidden="true">▪</span>
+                {item}
+              </li>
+            ))}
+          </motion.ul>
+        </div>
+      </Reveal>
+
+      {/* Tools */}
+      <Reveal className="py-16 md:py-20 max-w-7xl mx-auto px-6">
+        <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold tracking-tight text-text-primary mb-8">
+          Tools and technologies
+        </motion.h2>
         <div className="grid md:grid-cols-3 gap-8">
-          {[
-            { category: 'Frontend & Creative', items: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion', 'GSAP', 'Three.js', 'WebGL'] },
-            { category: 'Backend Tools', items: ['Node.js', 'Express', 'MongoDB', 'PostgreSQL', 'REST APIs'] },
-            { category: 'Workflow', items: ['GitHub', 'Vercel', 'Component systems', 'Responsive design', 'SEO basics', 'Accessibility basics'] },
-          ].map((col, i) => (
-            <FadeIn key={col.category} delay={i * 0.08}>
-              <div>
-                <h3 className="font-bold text-base mb-4 text-text-primary">{col.category}</h3>
-                <ul className="space-y-2">{col.items.map((item) => <li key={item} className="text-sm text-text-muted">{item}</li>)}</ul>
-              </div>
-            </FadeIn>
+          {TOOL_GROUPS.map((col) => (
+            <motion.div key={col.category} variants={fadeUp}>
+              <h3 className="font-[family-name:var(--font-mono)] text-xs text-maroon uppercase tracking-widest mb-4">
+                {col.category}
+              </h3>
+              <ul className="space-y-2">
+                {col.items.map((item) => (
+                  <li key={item} className="text-sm text-text-muted">{item}</li>
+                ))}
+              </ul>
+            </motion.div>
           ))}
         </div>
-      </section>
+      </Reveal>
 
-      <section className="mt-24 pt-16 border-t border-border text-center max-w-7xl mx-auto px-6 pb-24">
-        <FadeIn><h2 className="text-2xl md:text-3xl font-bold text-text-primary">Sound like what you need?</h2></FadeIn>
-        <FadeIn delay={0.08}>
-          <a href="mailto:hi.aditya.dev@gmail.com" className="inline-block text-maroon mt-6 text-lg hover:underline underline-offset-4 transition-all font-[family-name:var(--font-mono)] uppercase tracking-widest text-sm">Email me &rarr;</a>
-        </FadeIn>
+      {/* Location + working style */}
+      <Reveal className="py-16 md:py-20 border-t border-border bg-bg-surface-2">
+        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10">
+          <div>
+            <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold tracking-tight text-text-primary">
+              Location and availability
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-text-muted text-base mt-4 leading-relaxed max-w-md">
+              Based in {CONTACT_LOCATION}, working remotely with organisations in
+              India and internationally. Async communication and a shared staging
+              website keep projects moving across time zones.
+            </motion.p>
+          </div>
+          <div>
+            <motion.h2 variants={fadeUp} className="text-2xl md:text-3xl font-bold tracking-tight text-text-primary">
+              Working style
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-text-muted text-base mt-4 leading-relaxed max-w-md">
+              Clear scope before work begins, regular progress updates and
+              decisions documented as we go. Outside of client work I explore
+              motion, WebGL and generative systems—which is where the creative
+              technology projects come from.
+            </motion.p>
+          </div>
+        </div>
+      </Reveal>
+
+      {/* CTA */}
+      <section className="py-20 md:py-24 border-t border-border max-w-7xl mx-auto px-6">
+        <div className="max-w-2xl">
+          <h2 className="text-2xl md:text-3xl font-bold text-text-primary tracking-tight">
+            Have a project in mind?
+          </h2>
+          <p className="text-text-muted text-base mt-4 leading-relaxed max-w-lg">
+            Tell me what the website needs to achieve and I&apos;ll recommend a
+            practical direction.
+          </p>
+          <Link
+            href="/contact"
+            className="inline-block mt-8 bg-maroon text-white border border-border-hard px-6 py-3.5 text-[12px] font-[family-name:var(--font-mono)] uppercase tracking-[0.15em] font-medium shadow-hard hover:bg-maroon-dark transition-colors duration-200"
+          >
+            DISCUSS A PROJECT →
+          </Link>
+        </div>
       </section>
     </div>
   );

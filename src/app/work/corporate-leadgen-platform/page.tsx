@@ -2,14 +2,22 @@ import { Metadata } from 'next';
 import CaseStudyContent from '@/components/CaseStudyContent';
 
 export const metadata: Metadata = {
-  title: 'Corporate Lead-Gen Platform — B2B lead-generation experience',
-  description: 'A polished marketing platform built around modular sections, conversion-focused storytelling, and smooth motion.',
+  title: 'Corporate Lead-Gen Platform — B2B marketing platform concept',
+  description: 'A modular B2B marketing platform concept built so a marketing team can launch consistent campaign and service pages without touching code.',
+  alternates: { canonical: '/work/corporate-leadgen-platform' },
+  openGraph: {
+    title: 'Corporate Lead-Gen Platform — B2B Marketing Platform Concept',
+    description: 'A modular B2B marketing platform concept built around a component-driven system for consistent campaign pages.',
+    url: '/work/corporate-leadgen-platform',
+    type: 'article',
+  },
 };
 
 export default function CorporateCaseStudy() {
   return (
     <CaseStudyContent
-      meta="CASE STUDY 02 · B2B MARKETING SITE · REACT / NEXT.JS / FRAMER MOTION"
+      meta="CASE STUDY · B2B MARKETING PLATFORM · REACT / NEXT.JS / FRAMER MOTION"
+      disclosure="This is an independent concept project created to explore a B2B marketing-platform design and technical direction. It was not commissioned by a represented business."
       title="Designing a B2B lead-generation platform experience"
       summary="A polished marketing platform built around modular sections, conversion-focused storytelling, and smooth motion."
       proof={[

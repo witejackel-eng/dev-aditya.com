@@ -2,9 +2,17 @@ import { Metadata } from 'next';
 import ContactContent from './ContactContent';
 
 export const metadata: Metadata = {
-  title: 'Contact — Tell me what you are trying to build',
+  title: 'Contact — Discuss a Project',
   description:
-    'Send the short version. I\'ll understand the project, the current problem, and what needs to ship.',
+    'Share the company, current website, project goal and expected timing. I review the requirements and reply with the most practical next step.',
+  alternates: { canonical: '/contact' },
+  openGraph: {
+    title: 'Discuss a Project — Aditya',
+    description:
+      'Tell me what the website needs to achieve and I\'ll recommend a practical direction.',
+    url: '/contact',
+    type: 'website',
+  },
 };
 
 export default function ContactPage() {
