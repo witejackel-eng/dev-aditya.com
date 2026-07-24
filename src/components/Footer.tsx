@@ -120,7 +120,7 @@ export default function Footer() {
         {/* Bottom */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-8">
           <p className="text-text-muted text-xs font-[family-name:var(--font-mono)]">
-            © {year} Aditya. Independent Web Designer &amp; Frontend Developer.
+            {`© ${year} Aditya. Independent Web Designer & Frontend Developer.`}
           </p>
         </div>
       </div>
