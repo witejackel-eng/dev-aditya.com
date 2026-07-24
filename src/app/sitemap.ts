@@ -1,21 +1,31 @@
 import { MetadataRoute } from 'next';
+import { SITE_URL } from '@/config/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://dev-aditya.com';
+  const baseUrl = SITE_URL;
 
   const routes = [
-    '', '/work', '/work/saffron-steam-experience', '/work/corporate-leadgen-platform',
-    '/work/dust-signal', '/work/aarohan-legal', '/about', '/mentoring',
-    '/contact', '/resources', '/resources/portfolio-checklist',
+    '', '/work', '/services', '/process',
+    '/work/aarohan-legal', '/work/corporate-leadgen-platform',
+    '/work/saffron-steam-experience', '/work/dust-signal',
+    '/about', '/contact', '/mentoring',
+    '/resources', '/resources/portfolio-checklist',
     '/resources/ai-website-agency', '/resources/frontend-qa',
     '/privacy', '/terms', '/accessibility',
     '/audit',
   ];
 
+  const priorityFor = (route: string) => {
+    if (route === '') return 1;
+    if (['/work', '/services', '/process', '/contact'].includes(route)) return 0.9;
+    if (route === '/audit') return 0.8;
+    return 0.7;
+  };
+
   return routes.map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: new Date('2026-07-10'),
+    lastModified: new Date('2026-07-24'),
     changeFrequency: 'monthly' as const,
-    priority: route === '' ? 1 : route === '/work' ? 0.9 : route === '/audit' ? 0.8 : 0.7,
+    priority: priorityFor(route),
   }));
 }

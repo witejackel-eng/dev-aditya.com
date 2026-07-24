@@ -1,6 +1,6 @@
 # dev-aditya.com
 
-A premium, dark-themed engineering portfolio for **Aditya** — a Front-End Developer & UI/UX Designer based in Delhi, India.
+A premium, editorial personal consultancy site for **Aditya** — an Independent Web Designer & Frontend Developer based in Delhi, India, working with B2B companies and professional-service firms.
 
 ## Overview
 
@@ -118,9 +118,9 @@ src/
 
 ## Author
 
-- **Aditya** — Front-End Developer & UI/UX Designer
+- **Aditya** — Independent Web Designer & Frontend Developer
 - GitHub: [witejackel-eng](https://github.com/witejackel-eng)
-- Email: hi.aditya.dev@gmail.com
+- Email: work@dev-aditya.com
 - Location: Delhi, India
 
 ## License

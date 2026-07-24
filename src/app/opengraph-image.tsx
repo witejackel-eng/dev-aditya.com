@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 export const alt =
-  "Aditya — Front-End Developer & UI/UX Designer based in Delhi, India";
+  "Aditya — Independent Web Designer & Frontend Developer based in Delhi, India";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -63,7 +63,7 @@ export default function OpenGraphImage() {
             fontWeight: 500,
           }}
         >
-          <span>Portfolio · 2026</span>
+          <span>Corporate Web · Frontend</span>
           <span>Delhi · IN</span>
         </div>
 
@@ -122,7 +122,7 @@ export default function OpenGraphImage() {
                 letterSpacing: "-0.012em",
               }}
             >
-              Front-End Developer &amp; UI/UX Designer
+              Independent Web Designer &amp; Frontend Developer
             </span>
             <span
               style={{
@@ -134,8 +134,8 @@ export default function OpenGraphImage() {
                 lineHeight: 1.35,
               }}
             >
-              Building high-performance digital interfaces with precision
-              engineering and intentional design.
+              Clear, credible, high-performance websites for B2B companies and
+              professional-service firms.
             </span>
           </div>
         </div>
@@ -193,7 +193,7 @@ export default function OpenGraphImage() {
             }}
           >
             <span>dev-aditya.com</span>
-            <span style={{ color: "#7A1F2B", fontSize: 22 }}>@witejackel</span>
+            <span style={{ color: "#7A1F2B", fontSize: 22 }}>work@dev-aditya.com</span>
           </div>
         </div>
       </div>

@@ -25,7 +25,7 @@ const envSchema = z.object({
   AUDIT_FROM_EMAIL: z.string().default('Aditya Website Audit <audit@dev-aditya.com>'),
 
   /** Internal notification address — receives new-lead alerts. */
-  AUDIT_NOTIFICATION_EMAIL: z.string().default('hi.aditya.dev@gmail.com'),
+  AUDIT_NOTIFICATION_EMAIL: z.string().default('work@dev-aditya.com'),
 
   /** HMAC secret for signing audit access tokens. */
   AUDIT_SIGNING_SECRET: z.string().optional(),

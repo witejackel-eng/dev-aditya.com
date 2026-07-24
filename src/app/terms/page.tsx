@@ -17,7 +17,7 @@ export default function TermsPage() {
 
       <h2 className="text-xl font-bold mt-10">Purpose</h2>
       <p className="text-text-muted mt-4 leading-relaxed">
-        This website is a personal portfolio showcasing my work as a front-end developer and UI/UX designer. The content is for informational and demonstration purposes.
+        This website presents my work as an independent web designer and frontend developer. The content is for informational and demonstration purposes.
       </p>
 
       <h2 className="text-xl font-bold mt-10">Content accuracy</h2>
@@ -38,8 +38,8 @@ export default function TermsPage() {
       <h2 className="text-xl font-bold mt-10">Contact</h2>
       <p className="text-text-muted mt-4 leading-relaxed">
         For questions about these terms, contact me at{' '}
-        <a href="mailto:hi.aditya.dev@gmail.com" className="text-maroon hover:underline">
-          hi.aditya.dev@gmail.com
+        <a href="mailto:work@dev-aditya.com" className="text-maroon hover:underline">
+          work@dev-aditya.com
         </a>.
       </p>
     </div>

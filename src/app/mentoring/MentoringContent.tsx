@@ -21,8 +21,7 @@ export default function MentoringContent() {
         <FadeIn delay={0.16}><p className="text-text-muted text-lg max-w-3xl mt-6 leading-relaxed">I help people turn rough website ideas, broken layouts, weak portfolios, and unfinished frontend projects into something cleaner, sharper, and ready to show.</p></FadeIn>
         <FadeIn delay={0.24}>
           <div className="flex flex-wrap gap-4 mt-8">
-            <a href="mailto:hi.aditya.dev@gmail.com" className="bg-maroon text-white border border-border-hard px-6 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard hover:bg-maroon-dark transition-colors duration-200 inline-block">EMAIL ME &rarr;</a>
-            <a href="tel:+919310736542" className="bg-white text-text-primary border border-border-hard px-6 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest shadow-hard-sm hover:bg-maroon hover:text-white transition-all duration-200 inline-block">CALL ME &rarr;</a>
+            <a href="mailto:work@dev-aditya.com" className="bg-maroon text-white border border-border-hard px-6 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard hover:bg-maroon-dark transition-colors duration-200 inline-block">EMAIL ME &rarr;</a>
           </div>
         </FadeIn>
       </section>
@@ -81,12 +80,7 @@ export default function MentoringContent() {
         <FadeIn><h2 className="text-2xl md:text-3xl font-bold text-text-primary">Want help with a project?</h2></FadeIn>
         <FadeIn delay={0.08}>
           <div className="mt-6 space-y-1">
-            <a href="mailto:hi.aditya.dev@gmail.com" className="text-maroon hover:underline underline-offset-4 transition-all font-[family-name:var(--font-mono)]">hi.aditya.dev@gmail.com</a>
-          </div>
-        </FadeIn>
-        <FadeIn delay={0.16}>
-          <div className="mt-2">
-            <a href="tel:+919310736542" className="text-text-muted hover:text-text-primary transition-colors text-sm">9310736542</a>
+            <a href="mailto:work@dev-aditya.com" className="text-maroon hover:underline underline-offset-4 transition-all font-[family-name:var(--font-mono)]">work@dev-aditya.com</a>
           </div>
         </FadeIn>
       </section>

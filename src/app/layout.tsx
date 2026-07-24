@@ -21,10 +21,11 @@ export const viewport: Viewport = {
 };
 
 // Fallback when request headers are not available (e.g. build-time
-// metadata extraction, generateStaticParams). Use the Vercel preview
-// URL because dev-aditya.com is not yet configured in DNS — pointing
-// OG image URLs at an unresolvable host is what broke Twitter cards.
-const FALLBACK_BASE_URL = "https://dev-aditya-com.vercel.app";
+// metadata extraction, generateStaticParams). The custom domain is being
+// configured now (see docs/DOMAIN_SETUP.md). getBaseUrl() still prefers the
+// live request Host header, so OG / Twitter image URLs are always served
+// from the same domain the page was crawled on.
+const FALLBACK_BASE_URL = "https://dev-aditya.com";
 
 /**
  * Resolve the absolute base URL of the current request.
@@ -52,11 +53,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: {
-      default: "Aditya — Front-End Developer & UI/UX Designer",
+      default: "Aditya — Corporate Web Designer & Frontend Developer",
       template: "%s | Aditya",
     },
     description:
-      "Aditya is a Delhi-based Front-End Developer and UI/UX Designer building high-performance digital interfaces, immersive 3D web experiences, corporate websites, dashboards, and interactive web apps.",
+      "Independent web designer and frontend developer helping B2B companies and professional-service firms build clear, credible and high-performance websites.",
     metadataBase: base,
     manifest: "/manifest.webmanifest",
     icons: {
@@ -80,11 +81,11 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
     openGraph: {
-      title: "Aditya — Front-End Developer & UI/UX Designer",
+      title: "Aditya — Corporate Web Design & Frontend Development",
       description:
-        "Building high-performance digital interfaces with precision engineering and intentional design.",
+        "Corporate websites, professional-service platforms and production-ready frontend development for companies in India and internationally.",
       url: baseUrl,
-      siteName: "Aditya Portfolio",
+      siteName: "Aditya",
       locale: "en_US",
       type: "website",
       // Image is auto-served by src/app/opengraph-image.tsx at /opengraph-image.
@@ -94,15 +95,15 @@ export async function generateMetadata(): Promise<Metadata> {
           url: "/opengraph-image",
           width: 1200,
           height: 630,
-          alt: "Aditya — Front-End Developer & UI/UX Designer based in Delhi, India",
+          alt: "Aditya — Independent Web Designer & Frontend Developer based in Delhi, India",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Aditya — Front-End Developer & UI/UX Designer",
+      title: "Aditya — Corporate Web Design & Frontend Development",
       description:
-        "Building high-performance digital interfaces with precision engineering and intentional design.",
+        "Corporate websites, professional-service platforms and production-ready frontend development for companies in India and internationally.",
       // Same image as Open Graph — served by src/app/twitter-image.tsx at /twitter-image.
       images: ["/twitter-image"],
     },
@@ -131,8 +132,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Person",
               name: "Aditya",
-              jobTitle: "Front-End Developer & UI/UX Designer",
-              email: "hi.aditya.dev@gmail.com",
+              jobTitle: "Independent Web Designer & Frontend Developer",
+              email: "work@dev-aditya.com",
               url: "https://dev-aditya.com",
               sameAs: ["https://github.com/witejackel-eng"],
               address: {

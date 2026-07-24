@@ -20,7 +20,7 @@ export default function AccessibilityPage() {
         <li className="flex gap-2"><span className="text-maroon">—</span> Semantic HTML structure for proper content hierarchy</li>
         <li className="flex gap-2"><span className="text-maroon">—</span> Full keyboard navigation support</li>
         <li className="flex gap-2"><span className="text-maroon">—</span> Visible focus indicators on all interactive elements</li>
-        <li className="flex gap-2"><span className="text-maroon">—</span> High contrast text on dark background</li>
+        <li className="flex gap-2"><span className="text-maroon">—</span> High-contrast text on light backgrounds</li>
         <li className="flex gap-2"><span className="text-maroon">—</span> ARIA labels on navigation and interactive components</li>
         <li className="flex gap-2"><span className="text-maroon">—</span> Reduced motion support via prefers-reduced-motion</li>
       </ul>
@@ -43,8 +43,8 @@ export default function AccessibilityPage() {
       <h2 className="text-xl font-bold mt-10">Contact</h2>
       <p className="text-text-muted mt-4 leading-relaxed">
         If you experience any accessibility issues or have feedback, contact me at{' '}
-        <a href="mailto:hi.aditya.dev@gmail.com" className="text-maroon hover:underline">
-          hi.aditya.dev@gmail.com
+        <a href="mailto:work@dev-aditya.com" className="text-maroon hover:underline">
+          work@dev-aditya.com
         </a>.
       </p>
     </div>

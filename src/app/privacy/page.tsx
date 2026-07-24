@@ -38,8 +38,8 @@ export default function PrivacyPage() {
       <h2 className="text-xl font-bold mt-10">Contact</h2>
       <p className="text-text-muted mt-4 leading-relaxed">
         If you have questions about this privacy policy, contact me at{' '}
-        <a href="mailto:hi.aditya.dev@gmail.com" className="text-maroon hover:underline">
-          hi.aditya.dev@gmail.com
+        <a href="mailto:work@dev-aditya.com" className="text-maroon hover:underline">
+          work@dev-aditya.com
         </a>.
       </p>
     </div>
