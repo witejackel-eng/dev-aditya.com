@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
+    "@react-email/render": "^2.1.0",
     "@studio-freight/lenis": "^1.0.42",
     "cheerio": "^1.2.0",
     "drizzle-orm": "^0.45.2",
