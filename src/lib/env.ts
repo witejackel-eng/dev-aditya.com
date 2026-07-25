@@ -27,6 +27,17 @@ const envSchema = z.object({
   /** Internal notification address — receives new-lead alerts. */
   AUDIT_NOTIFICATION_EMAIL: z.string().default('work@dev-aditya.com'),
 
+  /**
+   * Recipient address for the /contact enquiry form.
+   * Intentionally has no default — its absence at runtime means the
+   * contact form is not yet configured, and the API must report that
+   * honestly (503) rather than pretend delivery.
+   */
+  CONTACT_TO_EMAIL: z.string().optional(),
+
+  /** Verified Resend "from" address for /contact enquiry emails. Same no-default reasoning as above. */
+  CONTACT_FROM_EMAIL: z.string().optional(),
+
   /** HMAC secret for signing audit access tokens. */
   AUDIT_SIGNING_SECRET: z.string().optional(),
 
@@ -82,6 +93,8 @@ if (typeof window === 'undefined' && process.env.NODE_ENV !== 'production') {
     'TURNSTILE_SECRET_KEY',
     'ADMIN_PASSWORD_HASH',
     'ADMIN_SESSION_SECRET',
+    'CONTACT_TO_EMAIL',
+    'CONTACT_FROM_EMAIL',
   ];
 
   for (const key of optionalKeys) {
@@ -106,4 +119,8 @@ export const isFixturesMode = (() => {
 })();
 export const hasPageSpeedKey = typeof env.GOOGLE_PAGESPEED_API_KEY === 'string' && env.GOOGLE_PAGESPEED_API_KEY.length > 0;
 export const hasResendKey = typeof env.RESEND_API_KEY === 'string' && env.RESEND_API_KEY.length > 0;
+export const hasContactEmailConfig =
+  hasResendKey &&
+  typeof env.CONTACT_TO_EMAIL === 'string' && env.CONTACT_TO_EMAIL.length > 0 &&
+  typeof env.CONTACT_FROM_EMAIL === 'string' && env.CONTACT_FROM_EMAIL.length > 0;
 export const hasTurnstile = typeof env.NEXT_PUBLIC_TURNSTILE_SITE_KEY === 'string' && env.NEXT_PUBLIC_TURNSTILE_SITE_KEY.length > 0;

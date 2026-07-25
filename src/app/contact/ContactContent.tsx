@@ -32,21 +32,24 @@ const directContact = [
 const inputClass =
   'bg-white border border-border-hard text-text-primary placeholder:text-text-muted/50 focus:border-maroon focus:outline-none transition w-full px-4 py-3 text-sm';
 
+const initialFormData = {
+  name: '',
+  email: '',
+  company: '',
+  website: '',
+  projectType: '',
+  scope: '',
+  timing: '',
+  details: '',
+  _honey: '',
+  consent: false,
+};
+
 export default function ContactContent() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    company: '',
-    website: '',
-    projectType: '',
-    scope: '',
-    timing: '',
-    details: '',
-    _honey: '',
-    consent: false,
-  });
+  const [formData, setFormData] = useState(initialFormData);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [serverMessage, setServerMessage] = useState('');
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -72,6 +75,7 @@ export default function ContactContent() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (status === 'loading') return;
     if (!validate()) return;
     setStatus('loading');
     try {
@@ -91,8 +95,15 @@ export default function ContactContent() {
         }),
       });
       const data = await res.json();
-      setStatus(data.success ? 'success' : 'error');
+      setServerMessage(typeof data.message === 'string' ? data.message : '');
+      if (data.success) {
+        setStatus('success');
+        setFormData(initialFormData);
+      } else {
+        setStatus('error');
+      }
     } catch {
+      setServerMessage('');
       setStatus('error');
     }
   };
@@ -140,7 +151,9 @@ export default function ContactContent() {
               {status === 'success' ? (
                 <div className="bg-white border border-border-hard p-8 shadow-hard-sm">
                   <p className="text-xl font-bold mb-2 text-text-primary">Message sent.</p>
-                  <p className="text-text-muted">Thanks — I&apos;ll review the requirements and reply within 1&ndash;2 business days.</p>
+                  <p className="text-text-muted">
+                    {serverMessage || "Thanks — I'll review the requirements and reply within 1–2 business days."}
+                  </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} noValidate>
@@ -212,7 +225,7 @@ export default function ContactContent() {
                   </button>
                   {status === 'error' && (
                     <p className="text-red-600 text-sm mt-3">
-                      Something went wrong. Please email <a href={CONTACT_EMAIL_HREF} className="text-maroon hover:underline">{CONTACT_EMAIL}</a> directly.
+                      {serverMessage || 'Something went wrong. Please try again.'}
                     </p>
                   )}
                 </form>

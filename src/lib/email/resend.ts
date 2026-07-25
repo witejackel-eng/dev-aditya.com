@@ -23,6 +23,12 @@ import type { AuditFinding } from '@/lib/audit/types';
 
 import { AuditReportEmail, AUDIT_REPORT_EMAIL_SUBJECT } from '@/emails/AuditReportEmail';
 import { NewAuditLeadEmail, NEW_LEAD_EMAIL_SUBJECT } from '@/emails/NewAuditLeadEmail';
+import {
+  ContactEnquiryEmail,
+  CONTACT_ENQUIRY_EMAIL_SUBJECT,
+  contactEnquiryEmailText,
+  type ContactEnquiryEmailProps,
+} from '@/emails/ContactEnquiryEmail';
 
 // ──────────────────────────────────────────────────────────────
 // Resend client singleton
@@ -210,5 +216,67 @@ export async function sendNewLeadEmail(
     const message = err instanceof Error ? err.message : String(err);
     console.error('[email] Unexpected error sending lead notification:', message);
     return { success: false, error: message };
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// Public API — /contact enquiry email
+// ──────────────────────────────────────────────────────────────
+
+export type ContactEnquiryEmailResult =
+  | { success: true }
+  | { success: false; reason: 'not_configured' | 'send_failed'; error: string };
+
+/**
+ * Send a /contact form enquiry to the site owner, with Reply-To set to
+ * the visitor's own address.
+ *
+ * Distinguishes "not configured" (missing RESEND_API_KEY, CONTACT_TO_EMAIL,
+ * or CONTACT_FROM_EMAIL) from "send failed" (Resend rejected the request)
+ * so the API route can report the correct status and message for each.
+ */
+export async function sendContactEnquiryEmail(
+  params: ContactEnquiryEmailProps,
+): Promise<ContactEnquiryEmailResult> {
+  const toEmail = env.CONTACT_TO_EMAIL;
+  const fromEmail = env.CONTACT_FROM_EMAIL;
+
+  if (!resendClient || !toEmail || !fromEmail) {
+    const missing = [
+      !resendClient && 'RESEND_API_KEY',
+      !toEmail && 'CONTACT_TO_EMAIL',
+      !fromEmail && 'CONTACT_FROM_EMAIL',
+    ].filter(Boolean).join(', ');
+    console.warn(`[email] Skipping contact enquiry email — missing configuration: ${missing}.`);
+    return { success: false, reason: 'not_configured', error: `Missing configuration: ${missing}` };
+  }
+
+  try {
+    const subject = CONTACT_ENQUIRY_EMAIL_SUBJECT(params.name, params.company);
+
+    const { data, error } = await resendClient.emails.send({
+      from: fromEmail,
+      to: toEmail,
+      replyTo: params.email,
+      subject,
+      react: ContactEnquiryEmail(params),
+      text: contactEnquiryEmailText(params),
+    });
+
+    if (error) {
+      console.error('[email] Resend returned an error sending a contact enquiry:', error.message);
+      return { success: false, reason: 'send_failed', error: error.message };
+    }
+
+    // Redacted log — no PII beyond the recipient's domain.
+    console.info(
+      `[email] Contact enquiry sent: id=${data?.id}, from_domain=${params.email.split('@')[1] ?? 'unknown'}`,
+    );
+
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[email] Unexpected error sending contact enquiry email:', message);
+    return { success: false, reason: 'send_failed', error: message };
   }
 }
