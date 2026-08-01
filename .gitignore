@@ -63,4 +63,4 @@ Caddyfile
 mini-services/
 tests/
 examples/
-.z-ai-config
+.z-ai-configtool-results/
