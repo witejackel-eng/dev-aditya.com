@@ -227,7 +227,7 @@ export const PROJECTS: Project[] = [
     outcome:
       'An engineer can shortlist, compare and qualify products against their panel requirements, then raise a quotation request that already contains the context. The site keeps its engineering credibility while removing the friction that used to end in a phone call.',
     technology: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Drizzle ORM', 'Vercel'],
-    liveUrl: 'https://bharatelectrosafe.com',
+    liveUrl: 'https://bharat-electrosafe.vercel.app',
     caseStudyUrl: '/work/bharat-electrosafe',
     githubUrl: 'https://github.com/witejackel-eng/bharat-electrosafe',
     disclosure:
