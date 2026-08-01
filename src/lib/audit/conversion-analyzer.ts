@@ -253,7 +253,6 @@ function assessValueProposition($: cheerio.CheerioAPI): {
   has: boolean;
   issues: string[];
 } {
-  let score = 0;
   const body = $('body').text();
 
   // Check for value proposition language in the first part of the page

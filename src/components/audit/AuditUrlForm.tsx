@@ -71,6 +71,7 @@ export default function AuditUrlForm({ onNavigateToAudit, initialUrl = '', compa
   const prevExternalRef = useRef(externalSubmitting);
   useEffect(() => {
     if (prevExternalRef.current && !externalSubmitting) {
+      // eslint-disable-next-line -- legitimate external-state sync (loading reset when parent submitting flips to false)
       setLoading(false);
       // Reset Turnstile on failure
       setTurnstileResetKey(k => k + 1);

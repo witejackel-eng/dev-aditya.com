@@ -9,4 +9,4 @@ export const SITE_URL = 'https://dev-aditya.com';
 
 export const SITE_NAME = 'Aditya';
 
-export const SITE_ROLE = 'Independent Web Designer & Frontend Developer';
+export const SITE_ROLE = 'Designer & Developer for Business Websites and Digital Products';

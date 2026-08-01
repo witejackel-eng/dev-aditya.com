@@ -118,7 +118,7 @@ export default function CaseStudyContent({
       <Section className="mt-16">
         <p className="font-[family-name:var(--font-mono)] text-sm text-text-muted">Technology: {stack}</p>
         <div className="flex gap-6 mt-4">
-          <a href={liveUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-maroon hover:underline font-[family-name:var(--font-mono)] uppercase tracking-widest">Live website &nearr;</a>
+          {liveUrl && <a href={liveUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-maroon hover:underline font-[family-name:var(--font-mono)] uppercase tracking-widest">Live website &nearr;</a>}
           {githubUrl && <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-text-muted hover:text-text-primary transition-colors font-[family-name:var(--font-mono)] uppercase tracking-widest">GitHub &nearr;</a>}
         </div>
       </Section>

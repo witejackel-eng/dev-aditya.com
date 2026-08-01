@@ -7,8 +7,8 @@ import { Reveal, fadeUp } from '@/components/Reveal';
 const profileRows = [
   { label: 'BASED', value: 'Delhi, India' },
   { label: 'WORKING', value: 'Remote · India / International' },
-  { label: 'FOCUS', value: 'Corporate websites · B2B platforms' },
-  { label: 'SERVICES', value: 'Design · Frontend · Deployment' },
+  { label: 'FOCUS', value: 'Strategy · Design · Full-stack delivery' },
+  { label: 'RANGE', value: 'Corporate · Commerce · SaaS · Brand' },
   { label: 'STATUS', value: 'Available for selected projects' },
 ];
 
@@ -22,7 +22,7 @@ export default function Hero() {
             <motion.div variants={fadeUp} className="flex items-start gap-2 mb-6">
               <span className="w-3 h-3 bg-maroon inline-block mt-1 shrink-0" />
               <span className="font-[family-name:var(--font-mono)] text-xs text-text-muted tracking-widest uppercase leading-relaxed">
-                Web Design &amp; Frontend Development for B2B and Professional-Service Firms
+                Designer &amp; Developer for Business Websites, Ecommerce and Digital Products
               </span>
             </motion.div>
 
@@ -30,17 +30,18 @@ export default function Hero() {
               variants={fadeUp}
               className="text-[clamp(2.25rem,5.2vw,4rem)] font-bold tracking-tight leading-[1.05] text-text-primary max-w-2xl"
             >
-              Corporate websites built to earn{' '}
-              <span className="text-maroon">trust</span> and create opportunities.
+              I design and build websites that make{' '}
+              <span className="text-maroon">complicated businesses</span>{' '}
+              easier to trust — and easier to choose.
             </motion.h1>
 
             <motion.p
               variants={fadeUp}
               className="text-text-muted text-base md:text-lg max-w-xl mt-7 leading-relaxed"
             >
-              I design and develop clear, high-performance websites for companies
-              that need to explain complex services, strengthen their credibility
-              and turn more visitors into qualified enquiries.
+              Corporate websites, ecommerce platforms and digital products shaped
+              around the result your business needs, then engineered to work
+              properly after launch.
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4 mt-8 items-center">
@@ -48,21 +49,22 @@ export default function Hero() {
                 href="/work"
                 className="bg-maroon text-white border border-border-hard px-5 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest font-medium shadow-hard hover:bg-maroon-dark transition-colors duration-200"
               >
-                VIEW SELECTED WORK →
+                See what changed →
               </Link>
               <Link
                 href="/contact"
                 className="bg-white text-text-primary border border-border-hard px-5 py-3 text-sm font-[family-name:var(--font-mono)] uppercase tracking-widest hover:bg-maroon hover:text-white hover:border-maroon transition-all duration-200 shadow-hard-sm"
               >
-                DISCUSS A PROJECT →
-              </Link>
-              <Link
-                href="/services"
-                className="text-text-primary text-sm underline underline-offset-4 hover:text-maroon transition-colors duration-200"
-              >
-                View capabilities
+                Bring me the messy version →
               </Link>
             </motion.div>
+
+            <motion.p
+              variants={fadeUp}
+              className="mt-8 font-[family-name:var(--font-mono)] text-sm text-text-muted italic"
+            >
+              Designer&apos;s eye. Developer&apos;s hands. Business outcomes in the middle.
+            </motion.p>
           </Reveal>
         </div>
 

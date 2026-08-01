@@ -53,11 +53,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: {
-      default: "Aditya — Corporate Web Designer & Frontend Developer",
+      default: "Aditya — Designer & Developer for Business Websites and Digital Products",
       template: "%s | Aditya",
     },
     description:
-      "Independent web designer and frontend developer helping B2B companies and professional-service firms build clear, credible and high-performance websites.",
+      "Aditya designs and builds corporate websites, ecommerce platforms and digital products that make complicated businesses easier to understand, trust and choose.",
     metadataBase: base,
     manifest: "/manifest.webmanifest",
     icons: {
@@ -81,9 +81,9 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
     },
     openGraph: {
-      title: "Aditya — Corporate Web Design & Frontend Development",
+      title: "Aditya — Designer & Developer for Business Websites and Digital Products",
       description:
-        "Corporate websites, professional-service platforms and production-ready frontend development for companies in India and internationally.",
+        "Corporate websites, ecommerce platforms and digital products shaped around the result your business needs, then engineered to work properly after launch.",
       url: baseUrl,
       siteName: "Aditya",
       locale: "en_US",
@@ -101,9 +101,9 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Aditya — Corporate Web Design & Frontend Development",
+      title: "Aditya — Designer & Developer for Business Websites and Digital Products",
       description:
-        "Corporate websites, professional-service platforms and production-ready frontend development for companies in India and internationally.",
+        "Corporate websites, ecommerce platforms and digital products shaped around the result your business needs.",
       // Same image as Open Graph — served by src/app/twitter-image.tsx at /twitter-image.
       images: ["/twitter-image"],
     },
@@ -132,7 +132,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Person",
               name: "Aditya",
-              jobTitle: "Independent Web Designer & Frontend Developer",
+              jobTitle: "Designer & Developer for Business Websites and Digital Products",
               email: "work@dev-aditya.com",
               url: "https://dev-aditya.com",
               sameAs: ["https://github.com/witejackel-eng"],
