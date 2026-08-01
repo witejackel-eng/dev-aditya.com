@@ -1,12 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
-  /* config options here */
-  typescript: {
-    ignoreBuildErrors: true,
+  async redirects() {
+    return [
+      {
+        source: '/work/real-estate-atelier',
+        destination: '/work/aarohan-legal',
+        permanent: true,
+      },
+      {
+        source: '/work/driftwear-ecommerce',
+        destination: '/work/dust-signal',
+        permanent: true,
+      },
+    ];
   },
-  reactStrictMode: false,
 };
 
 export default nextConfig;

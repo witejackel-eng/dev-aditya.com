@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Aditya — Favicon SVG.
+     Original vector "A" monogram matching the header logo:
+     square maroon block (#7A1F2B), white "A", hard near-black
+     border (#111111).
+
+     The "A" is built as a single closed path with three strokes
+     visible (left leg, right leg, crossbar). The distinctive
+     feature is a small angular cut at the bottom-right corner of
+     the right leg — a 24-unit notch (24/512 = 4.7% of canvas) that
+     reads as a precision mark at 32×32 and above. At 16×16 the
+     notch falls below the pixel threshold and disappears cleanly,
+     so it never harms small-size legibility.
+
+     Geometry notes:
+       - Apex at (256, 96) — optically centred, slightly above the
+         geometric centre to compensate for visual descent.
+       - Outer bottom corners at y=416 — leaves 96 units of maroon
+         below the A, balanced with the 96 units of maroon above
+         the apex.
+       - Stroke thickness ~112 units (22% of width) at the bottom,
+         tapering to 0 at the apex — survives at 16×16.
+       - Crossbar at y=296..328 — sits at 58% of the A height,
+         clearly visible, no collapse.
+       - Border is a 1-unit hairline so it doesn't overpower the A
+         at 16×16.
+
+     No external fonts, no raster data, no JS, no gradients, no
+     glow, no shadows. Renders standalone in any browser. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Aditya monogram">
+  <!-- Maroon block -->
+  <rect x="0" y="0" width="512" height="512" fill="#7A1F2B" />
+  <!-- Hard near-black border (hairline) -->
+  <rect x="0.5" y="0.5" width="511" height="511" fill="none" stroke="#111111" stroke-width="1" />
+
+  <!-- "A" — single closed path with the angular cut at the
+       bottom-right corner of the right leg. -->
+  <path
+    fill="#FFFFFF"
+    d="M 256 96
+       L 368 392
+       L 344 416
+       L 312 416
+       L 256 256
+       L 200 416
+       L 144 416
+       Z"
+  />
+
+  <!-- Crossbar -->
+  <rect x="200" y="296" width="112" height="32" fill="#FFFFFF" />
+</svg>

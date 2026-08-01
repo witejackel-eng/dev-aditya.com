@@ -1,102 +1,155 @@
-import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { contactSchema } from "@/lib/validations/contact";
+import { NextRequest, NextResponse } from 'next/server';
 
-export const dynamic = "force-dynamic";
+import { CONTACT_EMAIL } from '@/config/contact';
+import { checkHoneypot, readBodyWithLimit } from '@/lib/request-security';
+import { sendContactEnquiryEmail } from '@/lib/email/resend';
+
+export const runtime = 'nodejs';
+
+const MAX_LENGTHS = {
+  name: 200,
+  email: 254,
+  company: 200,
+  website: 300,
+  projectType: 100,
+  scope: 200,
+  timing: 200,
+  details: 2000,
+  sourcePage: 300,
+} as const;
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** True for ASCII control characters (0-31, 127) — no place in a header or a display value. */
+function isControlCharCode(code: number): boolean {
+  return code <= 31 || code === 127;
+}
 
 /**
- * Contact enquiry endpoint.
- *
- * - Validates input with the shared zod schema (same one the client uses).
- * - Rejects honeypot-filled requests silently (spam bot trap).
- * - Rate-limits naively by email within a short window.
- * - Persists the enquiry so nothing is lost.
- * - Never exposes secrets or internal errors to the client.
+ * Strip control characters — including CR/LF, which would otherwise allow
+ * email header injection via the subject line — collapse whitespace, trim,
+ * and cap length. Used for every single-line field.
  */
-export async function POST(request: Request) {
-  let body: unknown;
+function sanitizeLine(value: unknown, maxLength: number): string {
+  if (typeof value !== 'string') return '';
+  let out = '';
+  for (let i = 0; i < value.length; i++) {
+    const code = value.charCodeAt(i);
+    out += isControlCharCode(code) ? ' ' : value[i];
+  }
+  return out.replace(/\s+/g, ' ').trim().slice(0, maxLength);
+}
 
+/** Like sanitizeLine, but preserves single newlines for the free-text details field. */
+function sanitizeDetails(value: unknown): string {
+  if (typeof value !== 'string') return '';
+  const normalized = value.split('\r\n').join('\n');
+  let out = '';
+  for (let i = 0; i < normalized.length; i++) {
+    const char = normalized[i];
+    const code = normalized.charCodeAt(i);
+    if (char === '\n' || !isControlCharCode(code)) out += char;
+  }
+  return out.trim().slice(0, MAX_LENGTHS.details);
+}
+
+export async function POST(request: NextRequest) {
+  let raw: string;
   try {
-    body = await request.json();
+    raw = await readBodyWithLimit(request, 50_000);
   } catch {
     return NextResponse.json(
-      { ok: false, error: "Invalid request." },
+      { success: false, message: 'Request body is too large.' },
+      { status: 413 },
+    );
+  }
+
+  let body: Record<string, unknown>;
+  try {
+    body = raw ? JSON.parse(raw) : {};
+  } catch {
+    return NextResponse.json(
+      { success: false, message: 'Invalid request body.' },
       { status: 400 },
     );
   }
 
-  const parsed = contactSchema.safeParse(body);
-
-  if (!parsed.success) {
-    const firstError = parsed.error.issues[0];
+  // Honeypot — silently accept without sending an email or touching Resend.
+  if (checkHoneypot(body, '_honey')) {
     return NextResponse.json(
-      {
-        ok: false,
-        error: firstError?.message ?? "Please check the form and try again.",
-        fields: parsed.error.issues.map((i) => i.path.join(".")),
-      },
-      { status: 422 },
+      { success: true, message: "Enquiry received. I'll reply within 1–2 business days." },
+      { status: 200 },
     );
   }
 
-  const data = parsed.data;
+  const name = sanitizeLine(body.name, MAX_LENGTHS.name);
+  const email = sanitizeLine(body.email, MAX_LENGTHS.email);
+  const company = sanitizeLine(body.company, MAX_LENGTHS.company);
+  const website = sanitizeLine(body.website, MAX_LENGTHS.website);
+  const projectType = sanitizeLine(body.projectType, MAX_LENGTHS.projectType);
+  const scope = sanitizeLine(body.scope, MAX_LENGTHS.scope);
+  const timing = sanitizeLine(body.timing, MAX_LENGTHS.timing);
+  const details = sanitizeDetails(body.details);
 
-  // Honeypot: a bot fills `company_website`. Silently drop it.
-  if (data.company_website && data.company_website.length > 0) {
-    // Pretend success so bots do not retry.
-    return NextResponse.json({ ok: true });
+  if (!name || !email || !details) {
+    return NextResponse.json(
+      { success: false, message: 'Name, work email, and project details are required.' },
+      { status: 400 },
+    );
   }
 
-  // Naive rate limit: max 3 enquiries per email in 10 minutes.
-  try {
-    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-    const recent = await db.enquiry.count({
-      where: {
-        email: data.email.toLowerCase(),
-        createdAt: { gte: tenMinutesAgo },
-      },
-    });
+  if (!EMAIL_REGEX.test(email)) {
+    return NextResponse.json(
+      { success: false, message: 'Please provide a valid email address.' },
+      { status: 400 },
+    );
+  }
 
-    if (recent >= 3) {
+  const sourcePage = sanitizeLine(request.headers.get('referer'), MAX_LENGTHS.sourcePage) || '/contact';
+  const submittedAt = new Date().toLocaleString('en-IN', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Asia/Kolkata',
+  });
+
+  const result = await sendContactEnquiryEmail({
+    name,
+    email,
+    company,
+    website,
+    projectType,
+    scope,
+    timing,
+    details,
+    sourcePage,
+    submittedAt,
+  });
+
+  if (!result.success) {
+    if (result.reason === 'not_configured') {
+      // Safe diagnostic only — never leaks a key or personal data.
+      console.error('[contact] Enquiry email not sent — service not configured:', result.error);
       return NextResponse.json(
         {
-          ok: false,
-          error: "You have sent a few enquiries already. Please email me directly at hello@aditya.dev.",
+          success: false,
+          message: `Email delivery is not configured yet. Please email ${CONTACT_EMAIL} directly.`,
         },
-        { status: 429 },
+        { status: 503 },
       );
     }
-  } catch {
-    // If the rate-limit check fails, do not block the enquiry — fail open.
-  }
 
-  try {
-    await db.enquiry.create({
-      data: {
-        name: data.name,
-        email: data.email.toLowerCase(),
-        company: data.company || null,
-        website: data.website || null,
-        projectType: data.projectType || null,
-        budget: data.budget || null,
-        timeline: data.timeline || null,
-        message: data.message,
-        honeypot: data.company_website || "",
-        userAgent: request.headers.get("user-agent")?.slice(0, 500) ?? null,
-      },
-    });
-
-    return NextResponse.json({
-      ok: true,
-      message: "Enquiry received. I will reply within a working day or two.",
-    });
-  } catch {
+    console.error('[contact] Enquiry email failed to send:', result.error);
     return NextResponse.json(
       {
-        ok: false,
-        error: "Something went wrong on my end. Please email hello@aditya.dev directly.",
+        success: false,
+        message: `Something went wrong sending your enquiry. Please email ${CONTACT_EMAIL} directly.`,
       },
-      { status: 500 },
+      { status: 502 },
     );
   }
+
+  return NextResponse.json({
+    success: true,
+    message: "Enquiry received. I'll reply within 1–2 business days.",
+  });
 }
