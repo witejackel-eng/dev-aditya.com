@@ -442,14 +442,14 @@ export const PROJECTS: Project[] = [
     outcome:
       'A concept workspace proving dense operational software can be designed without drowning the operator. The hierarchy is explicit, the status language is consistent, and 24 routes collapse into a small number of mental models an agent can actually hold.',
     technology: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion', 'Zustand'],
-    liveUrl: '',
+    liveUrl: 'https://cloudsun-aditya-snowy.vercel.app',
     caseStudyUrl: '/work/cloudsun',
     githubUrl: 'https://github.com/witejackel-eng/cloudsun',
     disclosure:
-      'Concept product demonstration, not a commissioned client deployment. No live production environment is linked because none is stable enough to represent the work honestly.',
+      'Concept product demonstration, not a commissioned client deployment. A live interactive preview is available so the operational workspace can be explored hands-on.',
     caseStudy: {
       disclosure:
-        'Concept product demonstration, not a commissioned client deployment. Designed end-to-end as an operational workspace; no live production environment is linked because none is stable enough to represent the work honestly.',
+        'Concept product demonstration, not a commissioned client deployment. Designed end-to-end as an operational workspace; a live interactive preview is available so the 24-route workspace can be explored hands-on.',
       problem:
         'Operational software fails when it treats every screen as equally urgent. A call-centre workspace has live queues, agent states, escalations, compliance steps and reporting — all demanding attention at once. The default outcome is a dashboard wall that an operator scans instead of reads. The design problem is hierarchy: deciding what an agent, a supervisor and an admin each need to see first, and making the rest reachable without being loud.',
       constraints: [
